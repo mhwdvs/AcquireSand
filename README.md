@@ -1,14 +1,21 @@
-# gpucomp_dockerized
+# GPUCompare-Dockerized
 
 ## To be done
 
-- Put everything into docker containers
 - Switch from json files to SQL server queries
 - Inter-container networking/volumes
+	- API to become internal
+- Need to implement options for **dev** and **production**
+	- Currently nginx server serves on port 80 regardless
+- Re-implement API
+- Make rust script run as service
+- Improve Angular build times
+- Switch from dark to light mode
+- Improve mobile experience
 
 ## Install (docker)
 
-- ???
+- `docker-compose up --build`
 
 ## Install (to be run by docker)
 
@@ -21,7 +28,7 @@
 	- Or use `ng build` to create the files to be hosted by a web server
 
 
-### MongoDB
+### MongoDB (yet to be implemented)
 
 - `curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -`
 - `echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
