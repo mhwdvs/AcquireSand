@@ -1,0 +1,36 @@
+<h2>Filters:</h2>
+<select #specific (change)="change(specific.value, 'specific')" name="specific">
+    <option value="" selected>Specific GPU</option>
+    <option *ngFor="let gpu of original_data" value="{{gpu.name}}">{{gpu.name}}</option>
+</select>
+<select #minperf (change)="change(minperf.value, 'minperf')" name="minperf">
+    <option value="" selected>Minimum performance</option>
+    <option *ngFor="let gpu of original_data" value="{{gpu.relative}}">{{gpu.name}}</option>
+</select>
+<select #brand (change)="change(brand.value, 'brand')" name="brand">
+    <option value="" selected>Brand</option>
+    <option value="amd">AMD</option>
+    <option value="nvidia">NVIDIA</option>
+</select>
+<input #min (input)="change(min.value, 'min')" type="number" min="0" placeholder="Min price">
+<input #max (input)="change(max.value, 'max')" type="number" min="0" placeholder="Max price">
+<br />
+<h4>Total listings: {{listing_number}}</h4>
+<h4>Last updated: {{last_update}}</h4>
+
+<app-search-results id="parent"
+    [gpus]="gpus">
+</app-search-results>
+
+<button #topBtn (click)="scroll_top()" id="topBtn" title="Scroll to Top">^</button>
+
+<!-- loading anchor -->
+<div #anchor id="anchor" [hidden]="end_of_results">
+    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+<div [hidden]="no_more_results">
+    <p>No more results ;(</p>
+</div>
+<div [hidden]="no_results">
+    <p>No results found ;(</p>
+</div>

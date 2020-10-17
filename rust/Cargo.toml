@@ -1,0 +1,12 @@
+[package]
+name = "gpucomp-background"
+version = "0.1.0"
+authors = ["Matthew Davis <mhwdvs@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+reqwest = "0.10.4"
+tokio = { version = "0.2", features = ["macros"] }
+json = "0.12.4"

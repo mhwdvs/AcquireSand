@@ -1,0 +1,15 @@
+<div>
+  <!-- navbar -->
+  <nav>
+    <h1>GPU Compare</h1>
+    <button class="btn" (click)="show_how()">How</button>
+    <button class="btn" (click)="show_gpu()">GPU's</button>
+  </nav>
+  <h3>- components sorted by price/performance (by best value)</h3>
+
+  <!-- main -->
+  <app-how-it-works [hidden]="!how"></app-how-it-works>
+  <app-gpu-search [hidden]="!gpu"></app-gpu-search>
+
+  <!-- footer -->
+</div>

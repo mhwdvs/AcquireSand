@@ -1,0 +1,57 @@
+#listing {
+    display: grid;
+    max-width: 390px;
+}
+
+#listing_contents{
+    margin: auto;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #151515;
+}
+
+#title {
+    margin:0;
+}
+
+#price {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    align-self: flex-end;
+}
+
+.ppv {
+    font-family: monospace;
+    font-weight: bold;
+    text-align: center;
+}
+
+.flexgrid {
+    display: flex;
+}
+
+.col {
+    flex: 1;
+    display: flex;
+}
+
+.dial-tag {
+    display: inline;
+    margin: auto;
+}
+
+.graphs {
+    margin: auto;
+}
+
+.tag {
+    padding: 10px; 
+    margin: 10px; 
+    margin-top: 0px; 
+    background-color: #333333; 
+    border-radius: 10px; 
+    display: table; 
+    white-space: nowrap; 
+    overflow: hidden;
+}
