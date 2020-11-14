@@ -143,7 +143,7 @@ app.options('/get_listings', cors()) // include before other routes
 app.options('/get_gpus', cors()) // include before other routes
 
 https.createServer({
-	key: fs.readFileSync("privkey.pem"),
-	cert: fs.readFileSync("fullchain.pem")
+	key: fs.readFileSync("./certs/privkey.pem"),
+	cert: fs.readFileSync("./certs/fullchain.pem")
 }, app)
 .listen(port, () => {console.log("Live on port " + port);});

@@ -297,3 +297,6 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,virtualenv,rust,node,angular
+
+# ignore gpu db
+/commonfiles

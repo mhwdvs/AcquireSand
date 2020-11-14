@@ -8,7 +8,4 @@ COPY package-lock.json .
 RUN ls
 RUN npm install
 
-COPY fullchain.pem .
-COPY privkey.pem .
-
 CMD ["npm", "run", "dev"]

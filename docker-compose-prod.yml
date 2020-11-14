@@ -2,14 +2,11 @@ version: "3.7"
 services:
   angular:
     build: ./angular
-    #ports:
-      # - "443:443"
-      #- "80:80"
     volumes:
       - ./angular/src:/var/local/angular/src
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
-      - api
+      - nginx
   rust:
     build: ./rust
     volumes:
@@ -19,15 +16,33 @@ services:
     volumes:
       - ./api/src:/var/local/api/src
       - ./commonfiles:/var/local/commonfiles
+      - certs:/var/local/api/certs
     depends_on:
       - rust
+      - certbot
+    ports:
+      - "60777:60777"
   nginx:
     image: nginx:1.19.3-alpine
     volumes:
       - sitedata:/usr/share/nginx/html
+      - certs:/home
+      - ./nginx-remote.comf:/erc/nginx/conf.d/gpu.conf
     ports:
-      - "80:80"
+      - "777:80"
+      - "778:443"
     depends_on: 
-      - angular
+      - api
+      - certbot
+  certbot:
+    build:
+      context: ./certbot
+    args:
+      DOMAIN_NAME: gpu.mhwdvs.com
+      EMAIL_ADDRESS: public@mhwdvs.com
+    volumes:
+      - certs:/etc/letsencrypt/live/gpu.mhwdvs.com
+
 volumes:
   sitedata:
+  certs:

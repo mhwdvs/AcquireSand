@@ -2,14 +2,11 @@ version: "3.7"
 services:
   angular:
     build: ./angular
-    #ports:
-      # - "443:443"
-      #- "80:80"
     volumes:
       - ./angular/src:/var/local/angular/src
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
-      - api
+      - nginx
   rust:
     build: ./rust
     volumes:
@@ -19,15 +16,31 @@ services:
     volumes:
       - ./api/src:/var/local/api/src
       - ./commonfiles:/var/local/commonfiles
+      - certs:/var/local/api/certs
     depends_on:
       - rust
+      - selfsign
+    ports:
+      - "60777:60777"
   nginx:
     image: nginx:1.19.3-alpine
     volumes:
       - sitedata:/usr/share/nginx/html
+      - certs:/home
+      - ./nginx-local.conf:/etc/nginx/conf.d/gpu.conf
     ports:
       - "80:80"
+      - "443:443"
     depends_on: 
-      - angular
+      - api
+      - selfsign
+  selfsign:
+    image: frapsoft/openssl
+    working_dir: /home
+    entrypoint: openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=gpu.mhwdvs.com" -keyout privkey.pem -out fullchain.pem
+    volumes:
+      - certs:/home
+      
 volumes:
   sitedata:
+  certs:

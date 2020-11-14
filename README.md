@@ -26,6 +26,10 @@
 ### Production Environment
 - `docker-compose -f docker-compose-prod.yml up -d`
 
+### To repurpose
+- Change all references of "gpu.mhwdvs.com" to the domain you desire
+- Modify ports as required
+
 ## To be run by docker
 
 - Install python requirements

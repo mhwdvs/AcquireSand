@@ -3,7 +3,6 @@ FROM rust:1.47-buster
 WORKDIR /var/local/rust
 
 COPY Cargo.toml .
-COPY Cargo.lock .
 COPY ./src ./src
 
 RUN pwd

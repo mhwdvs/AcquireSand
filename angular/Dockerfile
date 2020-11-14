@@ -9,7 +9,6 @@ RUN npm install
 COPY *.json ./
 COPY browserslist .
 COPY README.md .
-RUN ls
 
 CMD ["npm", "run-script", "build", "--watch"]
 
