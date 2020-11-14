@@ -1,0 +1,33 @@
+version: "3.7"
+services:
+  angular:
+    build: ./angular
+    #ports:
+      # - "443:443"
+      #- "80:80"
+    volumes:
+      - ./angular/src:/var/local/angular/src
+      - sitedata:/var/local/angular/dist/gpucomp-ang
+    depends_on:
+      - api
+  rust:
+    build: ./rust
+    volumes:
+      - ./commonfiles:/var/local/commonfiles
+  api:
+    build: ./api
+    volumes:
+      - ./api/src:/var/local/api/src
+      - ./commonfiles:/var/local/commonfiles
+    depends_on:
+      - rust
+  nginx:
+    image: nginx:1.19.3-alpine
+    volumes:
+      - sitedata:/usr/share/nginx/html
+    ports:
+      - "80:80"
+    depends_on: 
+      - angular
+volumes:
+  sitedata:

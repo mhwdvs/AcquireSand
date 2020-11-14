@@ -2,9 +2,9 @@
 
 ## To be done
 
-- Switch from json files to SQL server queries
+- Switch from json files to SQL/mongodb server queries
 - Inter-container networking/volumes
-	- API to become internal
+	- API to become internal, then web server forwards requests?
 - Need to implement options for **dev** and **production**
 	- Currently nginx server serves on port 80 regardless
 - Re-implement API
@@ -12,30 +12,37 @@
 - Improve Angular build times
 - Switch from dark to light mode
 - Improve mobile experience
+- Add easy to change environment variables for ports, domains, etc.
 
-## Install (docker)
+## Install
 
+- Install docker
+- Install docker-compose
+- Modify environments to suit deployment needs (e.g. production environment serves non-standard ports to be served by a reverse proxy implementation on target machine)
+
+### Development Environment
 - `docker-compose up --build`
 
-## Install (to be run by docker)
+### Production Environment
+- `docker-compose -f docker-compose-prod.yml up -d`
 
-- `pip install -r GPUCompare/requrements.txt
-- `cd gpucomp_api && sudo openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=gpu.mhwdvs.com" -keyout privkey.pem -out fullchain.pem && cd ..`
-- `sudo apt install libssl-del pkg-config`
-- `cargo run`
-- `cd gpucomp_api && npm install && npm start && cd ..`
-- `cd gpucompare-angular && npm install && ng serve && cd ..`
-	- Or use `ng build` to create the files to be hosted by a web server
+## To be run by docker
 
-
-### MongoDB (yet to be implemented)
-
-- `curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -`
-- `echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-- `sudo apt update`
-- `sudo apt install mongodb-org`
-- `sudo systemctl start mongod.service`
-
+- Install python requirements
+`pip install -r GPUCompare/requrements.txt`
+- Generate SSL keys for HTTPS
+```
+// Change "gpu.mhwdvs.com" to the url the webservice will be hosed on
+cd gpucomp_api && sudo openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=gpu.mhwdvs.com" -keyout privkey.pem -out fullchain.pem && cd ..
+sudo apt install libssl-del pkg-config
+```
+- Install rust dependancies and run
+`cargo run`
+- Install TS dependancies and run
+`cd gpucomp_api && npm install && npm start && cd ..`
+- Install TS dependancies and run
+	- Or use `ng build --watch` to create files to be hosted by a web server
+`cd gpucompare-angular && npm install && ng serve && cd ..`
 
 ## Design
 
