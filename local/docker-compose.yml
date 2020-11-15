@@ -17,11 +17,13 @@ services:
       - ../containers/api/src:/var/local/api/src
       - ../containers/commonfiles:/var/local/commonfiles
       - certs:/var/local/api/certs
+      - ./.env:/var/local/api/.env
     depends_on:
       - rust
       - selfsign
     ports:
       - "${API_PORT}:60777"
+    entrypoint: npm run dev ${DOMAIN_NAME}
   nginx:
     image: nginx:1.19.3-alpine
     volumes:
