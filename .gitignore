@@ -291,7 +291,7 @@ Cargo.lock
 [Ii]nclude
 [Ll]ib
 [Ll]ib64
-[Ll]ocal
+#[Ll]ocal
 [Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
@@ -300,3 +300,6 @@ pip-selfcheck.json
 
 # ignore gpu db
 commonfiles/
+
+# ignore environment variables, including ebay API keys
+.env

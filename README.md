@@ -18,35 +18,24 @@
 
 - Install docker
 - Install docker-compose
-- Modify environments to suit deployment needs (e.g. production environment serves non-standard ports to be served by a reverse proxy implementation on target machine)
+- Add `.env` files to both `/local` and `/production` directories with the following contents:
+```
+DOMAIN_NAME=example.com
+EMAIL_ADDRESS=me@example.com
+EBAY_API_KEY=your_api_key
+HTTP_PORT=80
+HTTPS_PORT=443
+API_PORT=60777
+```
+(feel free to edit to your preferences, if its implemented right the values shouldnt effect functionality!)
+Email address is only used in production for getting notifications from LetsEncrypt
+- Edit nginx.conf (probably just in production) to suit your deployment
 
 ### Development Environment
-- `docker-compose up --build`
+- `cd local && docker-compose up --build`
 
 ### Production Environment
-- `docker-compose -f docker-compose-prod.yml up -d`
-
-### To repurpose
-- Change all references of "gpu.mhwdvs.com" to the domain you desire
-- Modify ports as required
-
-## To be run by docker
-
-- Install python requirements
-`pip install -r GPUCompare/requrements.txt`
-- Generate SSL keys for HTTPS
-```
-// Change "gpu.mhwdvs.com" to the url the webservice will be hosed on
-cd gpucomp_api && sudo openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=gpu.mhwdvs.com" -keyout privkey.pem -out fullchain.pem && cd ..
-sudo apt install libssl-del pkg-config
-```
-- Install rust dependancies and run
-`cargo run`
-- Install TS dependancies and run
-`cd gpucomp_api && npm install && npm start && cd ..`
-- Install TS dependancies and run
-	- Or use `ng build --watch` to create files to be hosted by a web server
-`cd gpucompare-angular && npm install && ng serve && cd ..`
+- `cd production && docker-compose up -d`
 
 ## Design
 
