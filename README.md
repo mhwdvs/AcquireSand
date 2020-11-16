@@ -5,8 +5,7 @@
 - Switch from json files to SQL/mongodb server queries
 - Inter-container networking/volumes
 	- API to become internal, then web server forwards requests?
-- Need to implement options for **dev** and **production**
-	- Currently nginx server serves on port 80 regardless
+	- Seems redundant
 - Re-implement API
 - Make rust script run as service
 - Improve Angular build times
@@ -16,9 +15,12 @@
 
 ## Install
 
-- Install docker
-- Install docker-compose
+- Install **docker**
+- Install **docker-compose**
 - Add `.env` files to both `/local` and `/production` directories with the following contents:
+	- (feel free to edit to your preferences, if its implemented right the values shouldnt effect functionality!)
+	- Email address is only used in production for getting notifications from LetsEncrypt
+	- EBAY_API_KEY must be obtained from https://developer.ebay.com, and will be your *App ID (Client ID)* - it's not a key/secret really, but probably not ideal to be shared due to rate limits
 ```
 DOMAIN_NAME=example.com
 EMAIL_ADDRESS=me@example.com
@@ -27,8 +29,6 @@ HTTP_PORT=80
 HTTPS_PORT=443
 API_PORT=60777
 ```
-(feel free to edit to your preferences, if its implemented right the values shouldnt effect functionality!)
-Email address is only used in production for getting notifications from LetsEncrypt
 - Edit nginx.conf (probably just in production) to suit your deployment
 
 ### Development Environment
