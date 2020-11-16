@@ -1,7 +1,9 @@
 #![deny(warnings)]
 
 extern crate json;
+extern crate dotenv;
 
+use std::env;
 use std::fs::File;
 use std::path::Path;
 use std::io::prelude::*;
@@ -20,7 +22,9 @@ async fn get_req(gpu: String) -> Result<String, reqwest::Error> {
     let mut url = "https://svcs.ebay.com/services/search/FindingService/v1?".to_string();
     url.push_str("OPERATION-NAME=findItemsAdvanced&");
     url.push_str("SERVICE-VERSION=1.13.0&");
-    url.push_str("SECURITY-APPNAME=MatthewD-GPUCompa-PRD-ed10eaf1b-23915718&");  // My API key, should eventually be moved to external file
+    url.push_str("SECURITY-APPNAME=");
+    url.push_str(env::var("EBAY_API_KEY").unwrap().as_str());
+    url.push_str("&");  // My API key, should eventually be moved to external file
     url.push_str("RESPONSE-DATA-FORMAT=JSON&");
     url.push_str("REST-PAYLOAD=true&");
     url.push_str("GLOBAL-ID=EBAY-AU&");  // eBay region
@@ -106,6 +110,9 @@ fn write_time()
 }
 
 fn main() {
+    //use dotenv;
+    dotenv::dotenv().ok();
+
     // Read CSV input, return JSON search results
     let gpujson = read_json().unwrap();
     // Write output
