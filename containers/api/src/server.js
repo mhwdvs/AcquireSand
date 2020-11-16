@@ -1,6 +1,3 @@
-// determine and import correct environment variables
-require('dotenv').config({ path: '../.env' })
-
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -56,7 +53,7 @@ sorted_gpus.sort(function(a,b){
 app.post('/get_listings', cors(), (req, res) => {
 	// create a new entry here
 	console.log(req.body);
-	res.setHeader('Access-Control-Allow-Origin', 'https://' + process.argv[2]);
+	res.setHeader('Access-Control-Allow-Origin', 'https://' + process.env.DOMAIN_NAME);
 	res.setHeader('Access-Control-Allow-Methods', 'POST');
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin');
 	// check that request has required data
@@ -136,7 +133,7 @@ app.post('/get_listings', cors(), (req, res) => {
 });
 
 app.get('/get_gpus', cors(), (req, res) => {
-	res.setHeader('Access-Control-Allow-Origin', 'https://' + process.argv[2]);
+	res.setHeader('Access-Control-Allow-Origin', 'https://' + process.env.DOMAIN_NAME);
 	res.setHeader('Access-Control-Allow-Methods', 'POST');
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin');
 	return res.send(gpu_list);
