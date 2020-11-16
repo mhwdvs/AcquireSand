@@ -15,7 +15,8 @@ services:
   api:
     build: ../containers/api
     volumes:
-      - ../containers/commonfiles:/var/local/commonfiles
+      - ../containers/commonfiles/gpudb.json:/var/local/api/gpudb.json
+      - ../containers/commonfiles/outtime.json:/var/local/api/outtime.json
       - certs:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:

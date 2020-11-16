@@ -11,9 +11,14 @@ const cors = require('cors');
 app.use(express.json());
 
 let fs = require("fs");
-let gpus_file = fs.readFileSync("/var/local/commonfiles/gpudb.json");
+
+// try to read files, if they dont exist then exit
+fs.accessSync("./gpudb.json");
+fs.accessSync("./outtime.json");
+
+let gpus_file = fs.readFileSync("./gpudb.json");
 gpus_file = JSON.parse(gpus_file);
-let outtime = fs.readFileSync("/var/local/commonfiles/outtime.json");
+let outtime = fs.readFileSync("./outtime.json");
 outtime = JSON.parse(outtime);
 
 // init gpus
