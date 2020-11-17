@@ -110,13 +110,15 @@ fn write_time()
 }
 
 fn main() {
-    //use dotenv;
-    dotenv::dotenv().ok();
+    loop{
+        //use dotenv;
+        dotenv::dotenv().ok();
 
-    // Read CSV input, return JSON search results
-    let gpujson = read_json().unwrap();
-    // Write output
-    write_file(gpujson, "/var/local/commonfiles/gpudb.json".to_string());
-    write_time();
-    println!("Done!");
+        // Read CSV input, return JSON search results
+        let gpujson = read_json().unwrap();
+        // Write output
+        write_file(gpujson, "/var/local/commonfiles/gpudb.json".to_string());
+        write_time();
+        println!("Iteration complete, continuing");
+    }
 }
