@@ -8,8 +8,8 @@ h3 {
 }
 
 .btn {
-    color: #FFFFFF;
-    background-color: #000000;
+    color: #000000;
+    background-color: #FEFEFE;
     border-color: transparent;
     border-radius: 5px;
     font-size: 1.6rem;
@@ -23,7 +23,7 @@ h3 {
     color: white;
     border-color: #888888;
 }
-.btb:active, .active {
+.btn:active, .active {
     background-color: red;
     color: white;
 }
