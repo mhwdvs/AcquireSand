@@ -15,12 +15,16 @@
 }
 
 body {
-    background-color: #121212;
-    color: whitesmoke;
+    background-color: #FEFEFE;
+    color: #000000;
     font-family: "OpenSans";
     padding-top: 0.5em;
     padding-left: 2em;
     padding-right: 2em;
+}
+
+a{
+    color: #000000;
 }
 
 h1 {

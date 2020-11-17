@@ -7,7 +7,7 @@ services:
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
       - nginx
-    entrypoint: npm run start
+    entrypoint: npm run buildwatch
   rust:
     build: ../containers/rust
     volumes:

@@ -18,7 +18,7 @@
     width: 6px;
     height: 18px;
     border-radius: 20%;
-    background: #fff;
+    background: #FEFEFE;
   }
   .lds-spinner div:nth-child(1) {
     transform: rotate(0deg);
@@ -85,8 +85,8 @@
   z-index: 99; /* Make sure its above all other elements */
   border: none;
   outline: none;
-  background-color: #232323;
-  color: white;
+  background-color: #FEFEFE;
+  color: black;
   font-size: 2rem;
   padding-top: 0.5rem;
   padding-left: 0.5rem;
@@ -94,7 +94,7 @@
   border-radius: 0.5rem;
 }
 #topBtn:hover {
-  background-color: #303030;
+  background-color: #FEFEFE;
   cursor: pointer;
 }
 #parent {
