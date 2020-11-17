@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -9,9 +11,14 @@ const cors = require('cors');
 app.use(express.json());
 
 let fs = require("fs");
-let gpus_file = fs.readFileSync("/var/local/commonfiles/gpudb.json");
+
+// try to read files, if they dont exist then exit
+fs.accessSync("./gpudb.json");
+fs.accessSync("./outtime.json");
+
+let gpus_file = fs.readFileSync("./gpudb.json");
 gpus_file = JSON.parse(gpus_file);
-let outtime = fs.readFileSync("/var/local/commonfiles/outtime.json");
+let outtime = fs.readFileSync("./outtime.json");
 outtime = JSON.parse(outtime);
 
 // init gpus
@@ -53,7 +60,7 @@ sorted_gpus.sort(function(a,b){
 app.post('/get_listings', cors(), (req, res) => {
 	// create a new entry here
 	console.log(req.body);
-	res.setHeader('Access-Control-Allow-Origin', 'https://gpu.mhwdvs.com');
+	res.setHeader('Access-Control-Allow-Origin', 'https://' + process.env.DOMAIN_NAME);
 	res.setHeader('Access-Control-Allow-Methods', 'POST');
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin');
 	// check that request has required data
@@ -133,7 +140,7 @@ app.post('/get_listings', cors(), (req, res) => {
 });
 
 app.get('/get_gpus', cors(), (req, res) => {
-	res.setHeader('Access-Control-Allow-Origin', 'https://gpu.mhwdvs.com');
+	res.setHeader('Access-Control-Allow-Origin', 'https://' + process.env.DOMAIN_NAME);
 	res.setHeader('Access-Control-Allow-Methods', 'POST');
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin');
 	return res.send(gpu_list);

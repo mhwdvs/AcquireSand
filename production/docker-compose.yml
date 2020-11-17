@@ -1,0 +1,48 @@
+version: "3.7"
+services:
+  angular:
+    build: ../containers/angular
+    volumes:
+      - ../containers/angular/src:/var/local/angular/src
+      - sitedata:/var/local/angular/dist/gpucomp-ang
+    depends_on:
+      - nginx
+  rust:
+    build: ../containers/rust
+    volumes:
+      - ../containers/commonfiles:/var/local/commonfiles
+  api:
+    build: ../containers/api
+    volumes:
+      - ../containers/api/src:/var/local/api/src
+      - ../containers/commonfiles:/var/local/commonfiles
+      - certs:/var/local/api/certs
+    depends_on:
+      - rust
+      - certbot
+    ports:
+      - "${API_PORT}:60777"
+  nginx:
+    image: nginx:1.19.3-alpine
+    volumes:
+      - sitedata:/usr/share/nginx/html
+      - certs:/home
+      - ./nginx.conf:/etc/nginx/conf.d/gpu.conf
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    depends_on: 
+      - api
+      - certbot
+  certbot:
+    build:
+      context: ./certbot
+    args:
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+    volumes:
+      - certs:/etc/letsencrypt/live/${DOMAIN_NAME}
+
+volumes:
+  sitedata:
+  certs:

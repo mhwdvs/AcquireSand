@@ -1,0 +1,49 @@
+version: "3.7"
+services:
+  angular:
+    build: ../containers/angular
+    volumes:
+      - ../containers/angular/src:/var/local/angular/src
+      - sitedata:/var/local/angular/dist/gpucomp-ang
+    depends_on:
+      - nginx
+  rust:
+    build: ../containers/rust
+    volumes:
+      - ../containers/commonfiles:/var/local/commonfiles
+      - ./.env:/var/local/rust/.env
+  api:
+    build: ../containers/api
+    volumes:
+      - ../containers/commonfiles/gpudb.json:/var/local/api/gpudb.json
+      - ../containers/commonfiles/outtime.json:/var/local/api/outtime.json
+      - certs:/var/local/api/certs
+      - ./.env:/var/local/api/.env
+    depends_on:
+      - rust
+      - selfsign
+    ports:
+      - "${API_PORT}:60777"
+    entrypoint: npm run dev ${DOMAIN_NAME}
+  nginx:
+    image: nginx:1.19.3-alpine
+    volumes:
+      - sitedata:/usr/share/nginx/html
+      - certs:/home
+      - ./nginx.conf:/etc/nginx/conf.d/gpu.conf
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    depends_on: 
+      - api
+      - selfsign
+  selfsign:
+    image: frapsoft/openssl #literally just a container with openssl installed, should define locally to be safe
+    working_dir: /home
+    entrypoint: openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=${DOMAIN_NAME}" -keyout privkey.pem -out fullchain.pem
+    volumes:
+      - certs:/home
+      
+volumes:
+  sitedata:
+  certs:
