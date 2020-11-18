@@ -17,6 +17,7 @@ pipeline {
                 sh "git pull"
                 sh "cd production"
                 sh "cp '${ENV_VARS}' .env"
+                sh "ls"
                 sh "docker-compose build"
             }
         }
