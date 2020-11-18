@@ -40,9 +40,9 @@ services:
   certbot:
     build:
       context: ./certbot
-    args:
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+      args:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        EMAIL_ADDRESS: ${EMAIL_ADDRESS}
     volumes:
       - certs:/etc/letsencrypt/live/${DOMAIN_NAME}
 
