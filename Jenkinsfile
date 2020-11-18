@@ -1,11 +1,19 @@
 pipeline {
     agent any
 
+    environment{
+        ENV_VARS = credentials('GPUCompare-Prod-Env')
+    }
+
     stages {
         stage('Build') {
             steps {
                 sh "echo 'Building..'"
+                sh "git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git"
+                sh "cd GPUComapre-Dockerized"
                 sh "git pull"
+                sh "cd production"
+                sh "echo '${ENV_VARS}' > .env"
                 sh "docker-compose build"
             }
         }
@@ -17,13 +25,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh "echo 'Deploying....'"
-                withCredentials([sshUserPrivateKey(credentialsId: MainSSHKey, keyFileVariable: 'KEY'), file(credentialsId: 'GPUCompare-Prod-Env', variable: 'ENV')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: MainSSHKey, keyFileVariable: 'KEY')]) {
                     sh "ssh -i ${KEY} mhwdvs.com -C \
                     \'git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git && \
                     cd GPUComapre-Dockerized && \
                     git pull && \
                     cd production && \
-                    echo '${ENV}' > .env && \
+                    echo '${ENV_VARS}' > .env && \
                     docker-compose build && \
                     docker-compose up\'"
                 }
