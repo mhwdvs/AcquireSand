@@ -16,7 +16,7 @@ pipeline {
                 sh "git switch main"
                 sh "git pull"
                 dir("production"){
-                    sh "cp '${ENV_VARS}' .env"
+                    sh "cp -f '${ENV_VARS}' .env"
                     sh "docker-compose build"
                 }
             }
