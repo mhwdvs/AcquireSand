@@ -18,7 +18,7 @@ pipeline {
             steps {
                 echo 'Deploying....'
                 withCredentials([sshUserPrivateKey(credentialsId: MainSSHKey, keyFileVariable: 'KEY')]) {
-                    sh "ssh -i ${KEY} mhwdvs.com -C \'git clone && docker-compose build && docker-compose up\'"
+                    sh "ssh -i ${KEY} mhwdvs.com -C \'git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git && docker-compose build && docker-compose up\'"
                 }
             }
         }
