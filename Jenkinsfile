@@ -9,7 +9,9 @@ pipeline {
         stage('Build') {
             steps {
                 sh "echo 'Building..'"
-                sh "git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git"
+                try{
+                    sh "git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git"
+                }
                 sh "cd GPUCompare-Dockerized"
                 sh "git pull"
                 sh "cd production"
