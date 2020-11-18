@@ -9,10 +9,9 @@ pipeline {
         stage('Build') {
             steps {
                 sh "echo 'Building..'"
-                try{
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS'){
                     sh "git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git"
                 }
-                catch{}
                 sh "cd GPUCompare-Dockerized"
                 sh "git pull"
                 sh "cd production"
