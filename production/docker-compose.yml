@@ -38,8 +38,7 @@ services:
       - api
       - certbot
   certbot:
-    build:
-      context: ./certbot
+    build: ../containers/certbot
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
         EMAIL_ADDRESS: ${EMAIL_ADDRESS}
