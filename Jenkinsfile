@@ -32,7 +32,7 @@ pipeline {
                     cd production && \
                     echo '${ENV_VARS}' > .env && \
                     docker-compose build && \
-                    docker-compose up\'"
+                    docker-compose up -d\'"
                 }
             }
         }
