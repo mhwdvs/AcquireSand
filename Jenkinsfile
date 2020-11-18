@@ -15,10 +15,10 @@ pipeline {
                 sh "cd GPUCompare-Dockerized"
                 sh "git switch main"
                 sh "git pull"
-                sh "cd production"
-                sh "cp '${ENV_VARS}' .env"
-                sh "ls"
-                sh "docker-compose build"
+                dir("production"){
+                    sh "cp '${ENV_VARS}' .env"
+                    sh "docker-compose build"
+                }
             }
         }
         stage('Deploy') {
