@@ -4,19 +4,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
-                git pull
-                docker-compose build
+                sh "echo 'Building..'"
+                sh "git pull"
+                sh "docker-compose build"
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                sh "echo 'Testing..'"
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                sh "echo 'Deploying....'"
                 withCredentials([sshUserPrivateKey(credentialsId: MainSSHKey, keyFileVariable: 'KEY'), file(credentialsId: 'GPUCompare-Prod-Env', variable: 'ENV')]) {
                     sh "ssh -i ${KEY} mhwdvs.com -C \
                     \'git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git && \
