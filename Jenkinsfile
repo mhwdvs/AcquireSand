@@ -10,16 +10,11 @@ pipeline {
             steps {
                 sh "echo 'Building..'"
                 sh "git clone https://github.com/mhwdvs/GPUCompare-Dockerized.git"
-                sh "cd GPUComapre-Dockerized"
+                sh "cd GPUCompare-Dockerized"
                 sh "git pull"
                 sh "cd production"
                 sh "echo '${ENV_VARS}' > .env"
                 sh "docker-compose build"
-            }
-        }
-        stage('Test') {
-            steps {
-                sh "echo 'Testing..'"
             }
         }
         stage('Deploy') {
