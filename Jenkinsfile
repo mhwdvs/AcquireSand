@@ -15,7 +15,7 @@ pipeline {
                 sh "cd GPUCompare-Dockerized"
                 sh "git switch main"
                 sh "git pull"
-                dir("production"){
+                dir("local"){
                     sh "cp -f '${ENV_VARS}' .env"
                     sh "docker-compose build"
                 }
