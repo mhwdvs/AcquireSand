@@ -43,6 +43,14 @@ services:
     entrypoint: openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=${DOMAIN_NAME}" -keyout privkey.pem -out fullchain.pem
     volumes:
       - certs:/home
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: gpucompare
+    ports:
+      - "5432:5432"
+      - "5433:5433"
       
 volumes:
   sitedata:
