@@ -47,11 +47,10 @@ services:
     image: postgres:12
     restart: always
     environment:
-      POSTGRES_PASSWORD: gpucompare
+      POSTGRES_PASSWORD: a
     ports:
-      - "5432:5432"
-      - "5433:5433"
-      
+      - "54321:5432"
+
 volumes:
   sitedata:
   certs:
