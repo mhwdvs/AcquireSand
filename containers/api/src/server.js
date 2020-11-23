@@ -1,8 +1,12 @@
-require('dotenv').config()
+// import .env environment variables
+require('dotenv').config();
 
+// postgres
+const { Client } = require('pg');
+const client = new Client();
+
+// express api
 const express = require('express');
-const bodyParser = require('body-parser');
-
 const app = express();
 const port = 60777;
 const https = require('https');
@@ -10,15 +14,7 @@ const cors = require('cors');
 //expect incomming body to be in JSON format
 app.use(express.json());
 
-let fs = require("fs");
-
-// try to read files, if they dont exist then exit
-fs.accessSync("./gpudb.json");
-fs.accessSync("./outtime.json");
-
-let gpus_file = fs.readFileSync("./gpudb.json");
 gpus_file = JSON.parse(gpus_file);
-let outtime = fs.readFileSync("./outtime.json");
 outtime = JSON.parse(outtime);
 
 // init gpus

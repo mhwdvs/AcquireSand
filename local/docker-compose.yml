@@ -7,16 +7,11 @@ services:
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
       - nginx
-  rust:
-    build: ../containers/rust
-    volumes:
-      - ../containers/commonfiles:/var/local/commonfiles
-      - ./.env:/var/local/rust/.env
+  ebayapi:
+    build: ../containers/ebayapi
   api:
     build: ../containers/api
     volumes:
-      - ../containers/commonfiles/gpudb.json:/var/local/api/gpudb.json
-      - ../containers/commonfiles/outtime.json:/var/local/api/outtime.json
       - certs:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:
@@ -25,6 +20,14 @@ services:
     ports:
       - "${API_PORT}:60777"
     entrypoint: npm run dev ${DOMAIN_NAME}
+    environment: 
+      PGUSER: postgres
+      PGHOST: local_postgres
+      PGPASSWORD: a
+      PGDATABASE: gpucompare
+      PGPORT: 5432
+
+    networks: postgres
   nginx:
     image: nginx:1.19.3-alpine
     volumes:
@@ -45,12 +48,15 @@ services:
       - certs:/home
   postgres:
     image: postgres:12
+    container_name: local_postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: a
-    ports:
-      - "54321:5432"
+    networks: postgres
 
 volumes:
   sitedata:
   certs:
+
+networks: 
+  postgres:
