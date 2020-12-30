@@ -10,7 +10,9 @@ import re
 import requests
 import json
 import codecs
+import postgres
 
+return main()
 
 def relative(data):
     # Find largest 3dmark score to compare to
@@ -26,7 +28,6 @@ def relative(data):
         del gpu['3dmark']
     print(data)
     return data
-
 
 def get3dmark(data):
     path = "chromedriver.exe"
@@ -90,13 +91,21 @@ def get3dmark(data):
     driver.quit()
     return data
 
-chromeoptions = Options()
-chromeoptions.add_argument("--headless")
+def main():
+    # set chrome options
+    chromeoptions = Options()
+    chromeoptions.add_argument("--headless")
 
-with open('gpudb.json') as f:
-    # loads a JSON file as a python dict
-    data = json.load(f)
+    # read gpu names from json
+    with open('gpudb.json') as f:
+        # loads a JSON file as a python dict
+        data = json.load(f)
 
-data = relative(get3dmark(data))
-file = open("gpudb.json", 'w')
-json.dump(data, file)
+    # obtain data from 3dmark
+    data = relative(get3dmark(data))
+
+    # write data to json file
+    file = open("gpudb.json", 'w')
+    json.dump(data, file)
+
+    return 0
