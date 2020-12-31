@@ -7,6 +7,16 @@ services:
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
       - nginx
+  python:
+    build: ../containers/python
+    environment: 
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   ebayapi:
     build: ../containers/ebayapi
     environment: 
@@ -16,6 +26,8 @@ services:
       PGPASSWORD: ${PGPASSWORD}
       PGDATABASE: ${PGDATABASE}
       PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   api:
     build: ../containers/api
     volumes:
