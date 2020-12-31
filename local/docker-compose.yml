@@ -9,25 +9,31 @@ services:
       - nginx
   ebayapi:
     build: ../containers/ebayapi
+    environment: 
+      EBAY_API_KEY: ${EBAY_API_KEY}
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
   api:
     build: ../containers/api
     volumes:
       - certs:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:
-      - rust
       - selfsign
     ports:
       - "${API_PORT}:60777"
     entrypoint: npm run dev ${DOMAIN_NAME}
     environment: 
-      PGUSER: postgres
-      PGHOST: local_postgres
-      PGPASSWORD: a
-      PGDATABASE: gpucompare
-      PGPORT: 5432
-
-    networks: postgres
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   nginx:
     image: nginx:1.19.3-alpine
     volumes:
@@ -48,11 +54,13 @@ services:
       - certs:/home
   postgres:
     image: postgres:12
-    container_name: local_postgres
+    container_name: ${PGHOST}
     restart: always
     environment:
-      POSTGRES_PASSWORD: a
-    networks: postgres
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+    networks: 
+      - postgres
+    entrypoint: psql -U ${PGUSER} -c create database ${PGDATABASE}; create table gpulist; create table gpudb; create table lastupdate; && tail /dev/null
 
 volumes:
   sitedata:

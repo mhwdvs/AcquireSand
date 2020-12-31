@@ -20,7 +20,7 @@
 - Add `.env` files to both `/local` and `/production` directories with the following contents:
 	- (feel free to edit to your preferences, if its implemented right the values shouldnt effect functionality!)
 	- Email address is only used in production for getting notifications from LetsEncrypt
-	- EBAY_API_KEY must be obtained from https://developer.ebay.com, and will be your *App ID (Client ID)* - it's not a key/secret really, but probably not ideal to be shared due to rate limits
+	- EBAY_API_KEY must be obtained from https://developer.ebay.com, and will be your *App ID (Client ID)* - it's not a key/secret really, but probably not to be shared (eBay Developer Program ToS yada yada) 
 ```
 DOMAIN_NAME=example.com
 EMAIL_ADDRESS=me@example.com
@@ -28,6 +28,11 @@ EBAY_API_KEY=your_api_key
 HTTP_PORT=80
 HTTPS_PORT=443
 API_PORT=60777
+PGHOST=local_postgres
+PGPORT=5432
+PGDATABASE=gpucompare
+PGUSER=postgres
+PGPASSWORD=a
 ```
 - Edit nginx.conf (probably just in production) to suit your deployment
 
