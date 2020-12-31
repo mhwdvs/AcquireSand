@@ -1,4 +1,4 @@
 selenium
 bs4
 pandas
-postgres
+psycopg2-binary

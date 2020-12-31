@@ -93,6 +93,15 @@ server {
 - Express JS API to provide Angular with data from 
 - Angular to run web server
 
+### Postgres DB info
+
+#### Tables
+
+- gpulist: names of all gpus to be considered and their relative performance scores
+- gpudb: ebay listings
+- lastupdate: programatic UNIX EPOCH time of last time ebay listings were updated
+    - May be redundant
+
 ### Potential changes
 
 - Replace Express with SQL server

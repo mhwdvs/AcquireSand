@@ -10,11 +10,10 @@ import re
 import requests
 import json
 import codecs
-import postgres
+import psycopg2
 
-return main()
-
-def relative(data):
+# [{name, 3dmark}] -> [{name, relative}]
+def makeRelative(data):
     # Find largest 3dmark score to compare to
     highest = -1
     for gpu in data:
@@ -26,86 +25,68 @@ def relative(data):
         gpu['relative'] = gpu['3dmark']/highest
         # remove unnecesary 3dmark scores
         del gpu['3dmark']
-    print(data)
     return data
 
-def get3dmark(data):
+def get3dmark():
     path = "chromedriver.exe"
     driver = webdriver.Chrome("./chromedriver", chrome_options=chromeoptions)
+
     # Gets data from 3DMark site
     driver.get("https://benchmarks.ul.com/compare/best-gpus?amount=0&sortBy=SCORE&reverseOrder=true&types=DESKTOP&minRating=0")
-
-    for gpu in data:
-        print(gpu)
-        search = driver.find_element_by_xpath('//*[@id="search"]')
-        search.clear()
-        search.send_keys(gpu['name'].split(' ')[1] + webdriver.common.keys.Keys.ENTER) # searches for first work/term in string
-        time.sleep(2)
-        print(driver.current_url)
-        html = driver.page_source
-        soup = BeautifulSoup(html, "html.parser")
-        table = soup.find(id="productTable")
-
-        # Get table body
-        rows = []  # store final rows in here
-        tbody = table.find("tbody")
-
-        # FORMAT: Rank, Name, Score, Popularity
-        for row in tbody.findAll("tr"):  # Whole table body
-            pagedata = row.findAll("td")  # All td elements
-            # Get value from every column
-            textrow = []
-            for column in pagedata:  # Every td element
-                soup = BeautifulSoup(str(column), "html.parser")
-                if soup.find("a"):
-                    text = soup.find("a").text
-                    textrow.append(text)
-                elif soup.find("td", attrs={"class": "small-pr1"}):
-                    text = soup.text.strip()
-                    textrow.append(text)
-                #print(column)
-                #text = column.text
-                #textrow.append(text)
-            rows.append(textrow)
-
-        # Asks user to chose which listing is correct
-        print("Enter the number of the correct listing:")
-        print("(1 - " + str(len(rows)))
-        print("Or enter 'N' to skip this GPU")
-        # Prints the first value of every row (the name of the gpu)
-        i = 1
-        for row in rows:
-            print(str(i) + ": " + row[0])
-            i+=1
-        selection = input()
-
-        # 3dMark data rows
-        if selection == "N":
-            print("Skipping!")
-            gpu['3dmark'] = -1
-        else:
-            selection = int(selection) - 1
-            rows = rows[selection]
-            gpu['3dmark'] = int(rows[1])
-    
+    html = driver.page_source
     driver.quit()
-    return data
 
-def main():
+    soup = BeautifulSoup(html, "html.parser")
+    table = soup.find(id="productTable")
+
+    # Get table body
+    rows = []  # store final rows in here
+    tbody = table.find("tbody")
+
+    # FORMAT: Rank, Name, MSRP, Score, Value, Popularity
+    for row in tbody.findAll("tr"):  # Whole table body
+        pagedata = row.findAll("td")  # All elements of row
+        textrow = {}
+        for element in pagedata:  # Every td element
+            soup = BeautifulSoup(str(element), "html.parser")
+            # only names have a hyperlink
+            if soup.find("a"):
+                name = soup.find("a").text
+                textrow["name"] = name
+            # only scores are of the "small-pr1" class
+            elif soup.find("td", attrs={"class": "small-pr1"}):
+                score = soup.text.strip()
+                textrow["3dmark"] = score
+        rows.append(textrow)
+    return rows
+
+def __init__():
     # set chrome options
     chromeoptions = Options()
     chromeoptions.add_argument("--headless")
+    
+    # set postgres credentials from environment variables
+    PGHOST = os.environ.get("PGHOST")
+    PGPORT = os.environ.get("PGPORT")
+    PGDATABASE = os.environ.get("PGDATABASE")
+    PGUSER = os.environ.get("PGUSER")
+    PGPASSWORD = os.environ.get("PGPASSWORD")     
 
-    # read gpu names from json
-    with open('gpudb.json') as f:
-        # loads a JSON file as a python dict
-        data = json.load(f)
+    while(True):
+        # obtain data from 3dmark, and make the scores relative
+        data = relative(get3dmark())
 
-    # obtain data from 3dmark
-    data = relative(get3dmark(data))
+        # replace data in postgres db
+        # init Postgres object
+        pgdb = psycopg.connect(dbname=PGDATABASE, user=PGUSER, password=PGPASSWORD, host=PGHOST, port=PGPORT)
+        cur = pgdb.cursor()
+        # delete old data
+        cur.execute("DELETE FROM gpulist WHERE *")
+        # add new data
+        for gpu in data:
+            cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", gpu.name, gpu.relative)
+        cur.close()
 
-    # write data to json file
-    file = open("gpudb.json", 'w')
-    json.dump(data, file)
+        time.sleep(60 * 60 * 24)
 
     return 0
