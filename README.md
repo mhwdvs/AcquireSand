@@ -36,6 +36,50 @@ PGPASSWORD=a
 ```
 - Edit nginx.conf (probably just in production) to suit your deployment
 
+> Example local config:
+
+```
+server {
+    listen 80;
+    #server_name localhost;
+    return 301 https://localhost$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    #server_name localhost;
+    ssl_certificate /home/fullchain.pem;
+    ssl_certificate_key /home/privkey.pem;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+}
+```
+
+> Example production config
+
+```
+server {
+    listen 80;
+    server_name gpu.mhwdvs.com;
+    return 301 https://gpu.mhwdvs.com$request_uri;
+}
+
+server {
+    listen 443;
+    server_name gpu.mhwdvs.com;
+    ssl_certificate /home/fullchain.pem;
+    ssl_certificate_key /home/privkey.pem;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+}
+```
+
 ### Development Environment
 - `cd local && docker-compose up --build`
 
