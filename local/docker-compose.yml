@@ -72,11 +72,27 @@ services:
       POSTGRES_PASSWORD: ${PGPASSWORD}
     networks: 
       - postgres
-    entrypoint: psql -U ${PGUSER} -c create database ${PGDATABASE}; create table gpulist; create table gpudb; create table lastupdate; && tail /dev/null
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    #db init moved to separate container
+    #entrypoint: echo "create database ${PGDATABASE}; \c ${PGDATABASE}; create table gpulist(); create table gpudb(); create table lastupdate(); \dt;" >> init.sql && psql -U ${PGUSER} -f init.sql && tail -f /dev/null
+  postgres-init:
+    build: ../containers/postgres-init
+    depends_on: 
+      - postgres
+    networks: 
+      - postgres
+    environment: 
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGHOST: ${PGHOST}
+      PGPORT: ${PGPORT}
 
 volumes:
   sitedata:
   certs:
+  postgres:
 
 networks: 
   postgres:
