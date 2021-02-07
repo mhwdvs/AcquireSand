@@ -2,14 +2,8 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-import csv
-import pandas as pd
-import numpy as np
 import time
-import re
-import requests
-import json
-import codecs
+#import codecs
 import psycopg2
 
 # [{name, 3dmark}] -> [{name, relative}]
@@ -28,9 +22,11 @@ def makeRelative(data):
     return data
 
 def get3dmark():
-    path = "chromedriver.exe"
-    driver = webdriver.Chrome("./chromedriver", chrome_options=chromeoptions)
-
+    driver = webdriver.Remote(
+        command_executor='http://chromedriver:4444',
+        options=chromeoptions
+    )
+    print("Connection made!")
     # Gets data from 3DMark site
     driver.get("https://benchmarks.ul.com/compare/best-gpus?amount=0&sortBy=SCORE&reverseOrder=true&types=DESKTOP&minRating=0")
     html = driver.page_source
@@ -61,9 +57,7 @@ def get3dmark():
     return rows
 
 def __init__():
-    # set chrome options
-    chromeoptions = Options()
-    chromeoptions.add_argument("--headless")
+    print("Starting python script")
     
     # set postgres credentials from environment variables
     PGHOST = os.environ.get("PGHOST")
@@ -74,19 +68,29 @@ def __init__():
 
     while(True):
         # obtain data from 3dmark, and make the scores relative
-        data = relative(get3dmark())
+        print("Getting new data")
+        data = makeRelative(get3dmark())
 
         # replace data in postgres db
         # init Postgres object
+        print("Connecting to postgres")
         pgdb = psycopg.connect(dbname=PGDATABASE, user=PGUSER, password=PGPASSWORD, host=PGHOST, port=PGPORT)
         cur = pgdb.cursor()
         # delete old data
+        print("Deleting old gpus and scores")
         cur.execute("DELETE FROM gpulist WHERE *")
         # add new data
+        print("Adding new gpus and scores")
         for gpu in data:
             cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", gpu.name, gpu.relative)
         cur.close()
 
         time.sleep(60 * 60 * 24)
+        print("Sleeping for 24h before checking again")
 
-    return 0
+# set chrome options
+chromeoptions = webdriver.chrome.options.Options()
+chromeoptions.add_argument("--headless")
+chromeoptions.add_argument("window-size=1024,768")
+chromeoptions.add_argument("--no-sandbox")
+__init__()
