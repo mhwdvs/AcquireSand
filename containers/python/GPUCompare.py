@@ -6,6 +6,8 @@ import time
 #import codecs
 import psycopg2
 
+print("ASD")
+
 # [{name, 3dmark}] -> [{name, relative}]
 def makeRelative(data):
     # Find largest 3dmark score to compare to
@@ -52,7 +54,7 @@ def get3dmark():
             # only scores are of the "small-pr1" class
             elif soup.find("td", attrs={"class": "small-pr1"}):
                 score = soup.text.strip()
-                textrow["3dmark"] = score
+                textrow["3dmark"] = float(score)
         rows.append(textrow)
     return rows
 
@@ -74,19 +76,22 @@ def __init__():
         # replace data in postgres db
         # init Postgres object
         print("Connecting to postgres")
-        pgdb = psycopg.connect(dbname=PGDATABASE, user=PGUSER, password=PGPASSWORD, host=PGHOST, port=PGPORT)
+        pgdb = psycopg2.connect(dbname=PGDATABASE, user=PGUSER, password=PGPASSWORD, host=PGHOST, port=PGPORT)
         cur = pgdb.cursor()
         # delete old data
         print("Deleting old gpus and scores")
-        cur.execute("DELETE FROM gpulist WHERE *")
+        cur.execute("DELETE FROM gpulist")
         # add new data
         print("Adding new gpus and scores")
         for gpu in data:
-            cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", gpu.name, gpu.relative)
+            #cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", gpu["name"], gpu["relative"])
+            cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", (gpu["name"], gpu["relative"]))
+        pgdb.commit()
         cur.close()
+        pgdb.close()
 
-        time.sleep(60 * 60 * 24)
         print("Sleeping for 24h before checking again")
+        time.sleep(60 * 60 * 24)
 
 # set chrome options
 chromeoptions = webdriver.chrome.options.Options()

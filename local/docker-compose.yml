@@ -8,6 +8,7 @@ services:
     depends_on:
       - nginx
   python:
+    container_name: python
     build: ../containers/python
     environment: 
       PGUSER: ${PGUSER}
@@ -17,17 +18,29 @@ services:
       PGPORT: ${PGPORT}
     networks: 
       - postgres
-  ebayapi:
-    build: ../containers/ebayapi
+      - chromedriver
+    depends_on: 
+      - chromedriver
+  chromedriver:
+    container_name: chromedriver
+    build: ../containers/chromedriver
+    networks:
+      - chromedriver
     environment: 
-      EBAY_API_KEY: ${EBAY_API_KEY}
-      PGUSER: ${PGUSER}
-      PGHOST: ${PGHOST}
-      PGPASSWORD: ${PGPASSWORD}
-      PGDATABASE: ${PGDATABASE}
-      PGPORT: ${PGPORT}
-    networks: 
-      - postgres
+      # works
+      #CHROMEDRIVER_WHITELISTED_IPS: 127.0.0.1
+      CHROMEDRIVER_WHITELISTED_IPS: ''
+  #ebayapi:
+    #build: ../containers/ebayapi
+    #environment: 
+      #EBAY_API_KEY: ${EBAY_API_KEY}
+      #PGUSER: ${PGUSER}
+      #PGHOST: ${PGHOST}
+      #PGPASSWORD: ${PGPASSWORD}
+      #PGDATABASE: ${PGDATABASE}
+      #PGPORT: ${PGPORT}
+    #networks: 
+      #- postgres
   api:
     build: ../containers/api
     volumes:
@@ -96,3 +109,4 @@ volumes:
 
 networks: 
   postgres:
+  chromedriver:
