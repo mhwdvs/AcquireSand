@@ -6,8 +6,6 @@ import time
 #import codecs
 import psycopg2
 
-print("ASD")
-
 # [{name, 3dmark}] -> [{name, relative}]
 def makeRelative(data):
     # Find largest 3dmark score to compare to
@@ -84,7 +82,6 @@ def __init__():
         # add new data
         print("Adding new gpus and scores")
         for gpu in data:
-            #cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", gpu["name"], gpu["relative"])
             cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", (gpu["name"], gpu["relative"]))
         pgdb.commit()
         cur.close()
