@@ -27,20 +27,18 @@ services:
     networks:
       - chromedriver
     environment: 
-      # works
-      #CHROMEDRIVER_WHITELISTED_IPS: 127.0.0.1
       CHROMEDRIVER_WHITELISTED_IPS: ''
-  #ebayapi:
-    #build: ../containers/ebayapi
-    #environment: 
-      #EBAY_API_KEY: ${EBAY_API_KEY}
-      #PGUSER: ${PGUSER}
-      #PGHOST: ${PGHOST}
-      #PGPASSWORD: ${PGPASSWORD}
-      #PGDATABASE: ${PGDATABASE}
-      #PGPORT: ${PGPORT}
-    #networks: 
-      #- postgres
+  ebayapi:
+    build: ../containers/ebayapi
+    environment: 
+      EBAY_API_KEY: ${EBAY_API_KEY}
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   api:
     build: ../containers/api
     volumes:
@@ -87,8 +85,6 @@ services:
       - postgres
     volumes:
       - postgres:/var/lib/postgresql/data
-    #db init moved to separate container
-    #entrypoint: echo "create database ${PGDATABASE}; \c ${PGDATABASE}; create table gpulist(); create table gpudb(); create table lastupdate(); \dt;" >> init.sql && psql -U ${PGUSER} -f init.sql && tail -f /dev/null
   postgres-init:
     build: ../containers/postgres-init
     depends_on: 
