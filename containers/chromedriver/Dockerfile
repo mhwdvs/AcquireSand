@@ -31,7 +31,7 @@ RUN apt-get -yqq update && \
     apt-get -yqq install python-pip && \
     apt-get -yqq install libexif-dev && \
     apt-get -yqq install udev && \
-    rm -rf /var/lib/apt/lists/* \
+    rm -rf /var/lib/apt/lists/* && \
     pip install supervisor
 
 # Install Chrome WebDriver
