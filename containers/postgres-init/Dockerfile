@@ -15,10 +15,6 @@ RUN echo "${PGHOST}:${PGPORT}:${PGDATABASE}:${PGUSER}:${PGPASSWORD}" >> ~/.pgpas
 RUN chmod 0600 ~/.pgpass
 
 COPY wait-for-it.sh /usr/local/wait-for-it.sh
+COPY run.sh /usr/local/run.sh
 
-CMD /usr/local/wait-for-it.sh ${PGHOST}:${PGPORT} --\
-    psql -U ${PGUSER} -h ${PGHOST} -d postgres -c "create database ${PGDATABASE};";\
-    psql -U ${PGUSER} -h ${PGHOST} -c "create table gpudb(title TEXT, gpu TEXT, itemurl TEXT, imageurl TEXT, price MONEY, currency TEXT, available BOOLEAN);";\
-    psql -U ${PGUSER} -h ${PGHOST} -c "create table gpulist(name TEXT, relative DOUBLE PRECISION);";\
-    psql -U ${PGUSER} -h ${PGHOST} -c "create table lastupdate();";\
-    psql -U ${PGUSER} -h ${PGHOST} -c "\dt;"
+CMD /usr/local/wait-for-it.sh ${PGHOST}:${PGPORT} -- /usr/local/run.sh
