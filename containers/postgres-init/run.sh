@@ -25,5 +25,5 @@ do
     psql -U ${PGUSER} -h ${PGHOST} -c "select * from gpudb"
     psql -U ${PGUSER} -h ${PGHOST} -c "select * from gpulist"
     psql -U ${PGUSER} -h ${PGHOST} -c "select * from lastupdate"
-    sleep 10
+    sleep 1m
 done
