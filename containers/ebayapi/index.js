@@ -20,7 +20,7 @@ function sleep(ms) {
 async function loop() {
   while (true) {
     try {
-      await main();
+      // await main();
     } catch (e) {
       console.error(e);
     }
