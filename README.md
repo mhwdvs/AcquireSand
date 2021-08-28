@@ -16,6 +16,8 @@
 ### Current issues
 
 - api for website not updated for database access yet
+    - Filters aren't implemented
+- CORS issues on localhost (can switch to localho.st domain to bypass)
 
 ## Install
 
