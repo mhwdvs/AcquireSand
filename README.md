@@ -13,6 +13,11 @@
 - Improve mobile experience
 - Add easy to change environment variables for ports, domains, etc.
 
+### Current issues
+
+- postgres-init container is trying to create "gpucompare" database, which already exists
+- ebayapi container is trying to find "gpucompare" database, but can't find it
+
 ## Install
 
 - Install **docker**
