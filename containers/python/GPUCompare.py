@@ -76,13 +76,12 @@ def __init__():
         print("Connecting to postgres")
         pgdb = psycopg2.connect(dbname=PGDATABASE, user=PGUSER, password=PGPASSWORD, host=PGHOST, port=PGPORT)
         cur = pgdb.cursor()
-        # delete old data
-        print("Deleting old gpus and scores")
-        cur.execute("DELETE FROM gpulist")
         # add new data
-        print("Adding new gpus and scores")
+        print("Adding new gpus and updating scores")
         for gpu in data:
-            cur.execute("INSERT INTO gpulist (name, relative) VALUES (%s, %s);", (gpu["name"], gpu["relative"]))
+            splitname = gpu["name"].upper().split(' ', 1)
+            cur.execute("UPDATE gpulist SET relative = %s, brand = %s WHERE name = %s", (gpu["relative"], splitname[0], splitname[1]))
+            cur.execute("INSERT INTO gpulist (name, relative, brand) VALUES (%s, %s, %s);", (splitname[1], gpu["relative"], splitname[0]))
         pgdb.commit()
         cur.close()
         pgdb.close()

@@ -15,8 +15,7 @@
 
 ### Current issues
 
-- postgres-init container is trying to create "gpucompare" database, which already exists
-- ebayapi container is trying to find "gpucompare" database, but can't find it
+- api for website not updated for database access yet
 
 ## Install
 
