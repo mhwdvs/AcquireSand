@@ -4,15 +4,16 @@
 
 export const environment = {
   production: false,
-  get_gpus_endpoint: "https://localhost:60777/get_gpus",
-  get_listings_endpoint: "https://localhost:60777/get_listings"
+  get_gpus_endpoint: 'https://localho.st:60777/get_gpus',
+  get_listings_endpoint: 'https://localho.st:60777/get_listings'
 };
 
 /*
  * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
+ * to ignore zone related error stack frames such as `zone.run`,
+ * `zoneDelegate.invokeTask`.
  *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
+ * This import should be commented out in production mode because it will have a
+ * negative impact on performance if an error is thrown.
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.

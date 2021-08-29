@@ -29,33 +29,41 @@ let gpu_list;
 
 loop();
 
-async function loop() {
-  gpu_list = await getGPUList();  // update gpulist
-  await sleep(60 * 1000);
-}
+
+// ____________________________________________________________________________
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function loop() {
+  while (true) {
+    try {
+      gpu_list = await getGPUList();  // update gpulist
+
+    } catch (err) {
+      console.error(err);
+    }
+    await sleep(10 * 1000);
+  }
+}
+
 async function getGPUList() {
   // get all gpulist
-  try {
-    // Accessing database
-    var gpulist = await (pool.query('SELECT * FROM gpulist'));
-    // Got data
-    if (gpulist.rows.length === 0) {
-      throw (new Error('Failed to get any GPUs'));
-    }
-    var res = [];
-    for (var i = 0; i < gpulist.rows.length; ++i) {
-      res.push(gpulist.rows[i]);
-    }
-    // Got gpu list!
-    return res;
-  } catch (err) {
-    console.error('Error getting GPU List: ' + err.name + err.message);
+  // Accessing database
+  const client = await pool.connect();
+  var gpulist = await (client.query('SELECT * FROM gpulist'));
+  client.release();
+  // Got data
+  if (gpulist.rows.length === 0) {
+    throw (new Error('Failed to get any GPUs'));
   }
+  var res = [];
+  for (var i = 0; i < gpulist.rows.length; ++i) {
+    res.push(gpulist.rows[i]);
+  }
+  // Got gpu list!
+  return res;
 }
 
 async function getListings() {}
@@ -75,8 +83,7 @@ let min_gpu = {
 app.post('/get_listings', cors(), async (req, res) => {
   // create a new entry here
   console.log(req.body);
-  res.setHeader(
-      'Access-Control-Allow-Origin', 'https://' + process.env.DOMAIN_NAME);
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader(
       'Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin');
@@ -126,49 +133,50 @@ app.post('/get_listings', cors(), async (req, res) => {
     // await pool.query('SELECT * FROM gpudb WHERE _ ORDER BY (price / (SELECT
     // relative FROM gpulist WHERE name = gpu)');
 
-    while (match_count < count && current < listing_number) {
-      let sorted_gpus = [];
-      let gpu = sorted_gpus[current];
-      let match = true;
-      for (let property in filters) {
-        let value = filters[property];
-        // only continue if filter exists and can still possibly be a match
-        if (value != '' && match == true) {
-          switch (property) {
-            case 'specific':
-              if (gpu.gpu != value) {
-                match = false;
-              }
-              break;
-            case 'minperf':
-              if (gpu.perf < value) {
-                match = false;
-              }
-              break;
-            case 'brand':
-              if (gpu.brand != value) {
-                match = false;
-              }
-              break;
-            case 'min':
-              if (gpu.price < value) {
-                match = false;
-              }
-              break;
-            case 'max':
-              if (gpu.price > value) {
-                match = false;
-              }
-              break;
+    /*
+while (match_count < count && current < listing_number) {
+  let sorted_gpus = [];
+  let gpu = sorted_gpus[current];
+  let match = true;
+  for (let property in filters) {
+    let value = filters[property];
+    // only continue if filter exists and can still possibly be a match
+    if (value != '' && match == true) {
+      switch (property) {
+        case 'specific':
+          if (gpu.gpu != value) {
+            match = false;
           }
-        }
+          break;
+        case 'minperf':
+          if (gpu.perf < value) {
+            match = false;
+          }
+          break;
+        case 'brand':
+          if (gpu.brand != value) {
+            match = false;
+          }
+          break;
+        case 'min':
+          if (gpu.price < value) {
+            match = false;
+          }
+          break;
+        case 'max':
+          if (gpu.price > value) {
+            match = false;
+          }
+          break;
       }
-      if (match && current >= first) {
-        ++match_count;
-        matches.push(gpu);
-      }
-      ++current;
     }
+  }
+  if (match && current >= first) {
+    ++match_count;
+    matches.push(gpu);
+  }
+  ++current;
+}*/
 
     let to_be_sent = {};
     to_be_sent.matches = await pool.query(
@@ -182,8 +190,8 @@ app.post('/get_listings', cors(), async (req, res) => {
 });
 
 app.get('/get_gpus', cors(), async (req, res) => {
-  res.setHeader(
-      'Access-Control-Allow-Origin', 'https://' + process.env.DOMAIN_NAME);
+  console.log(gpu_list);
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader(
       'Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin');
