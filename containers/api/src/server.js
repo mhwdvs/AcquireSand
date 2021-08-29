@@ -88,7 +88,7 @@ app.post('/get_listings', cors(), async (req, res) => {
   res.setHeader(
       'Access-Control-Allow-Headers', 'X-Requested-With,content-type,Origin');
   // check that request has required data
-  if (req.body.filters && req.body.count && req.body.first != null) {
+  if (true) {
     let filters = req.body.filters;
     let count = req.body.count;
     let first = req.body.first;
@@ -97,38 +97,39 @@ app.post('/get_listings', cors(), async (req, res) => {
     let current = 0;
     let matches = [];
 
-    let conditions = [];
-    for (let property in filters) {
-      switch (property) {
-        case 'specific':
-          if (gpu.gpu != value) {
-            match = false;
-          }
-          break;
-        case 'minperf':
-          if (gpu.perf < value) {
-            match = false;
-          }
-          break;
-        case 'brand':
-          conditions.push(
-              '(SELECT brand FROM gpulist WHERE name =' + value + ')');
-          if (gpu.brand != value) {
-            match = false;
-          }
-          break;
-        case 'min':
-          if (gpu.price < value) {
-            match = false;
-          }
-          break;
-        case 'max':
-          if (gpu.price > value) {
-            match = false;
-          }
-          break;
+    /*
+let conditions = [];
+for (let property in filters) {
+  switch (property) {
+    case 'specific':
+      if (gpu.gpu != value) {
+        match = false;
       }
-    }
+      break;
+    case 'minperf':
+      if (gpu.perf < value) {
+        match = false;
+      }
+      break;
+    case 'brand':
+      conditions.push(
+          '(SELECT brand FROM gpulist WHERE name =' + value + ')');
+      if (gpu.brand != value) {
+        match = false;
+      }
+      break;
+    case 'min':
+      if (gpu.price < value) {
+        match = false;
+      }
+      break;
+    case 'max':
+      if (gpu.price > value) {
+        match = false;
+      }
+      break;
+  }
+}*/
 
     // await pool.query('SELECT * FROM gpudb WHERE _ ORDER BY (price / (SELECT
     // relative FROM gpulist WHERE name = gpu)');
@@ -180,7 +181,7 @@ while (match_count < count && current < listing_number) {
 
     let to_be_sent = {};
     to_be_sent.matches = await pool.query(
-        'SELECT * FROM gpudb ORDER BY (price / (SELECT relative FROM gpulist WHERE name = gpu) LIMIT ' +
+        'SELECT * FROM gpudb ORDER BY (price / (SELECT relative FROM gpulist WHERE name = gpu)) LIMIT ' +
         count + ' OFFSET ' + first);
     res.send(to_be_sent);
   } else {
@@ -204,8 +205,8 @@ app.options('/get_gpus', cors())      // include before other routes
 https
     .createServer(
         {
-          key: fs.readFileSync('./certs/privkey.pem'),
-          cert: fs.readFileSync('./certs/fullchain.pem')
+          key: fs.readFileSync('certs/privkey_api.pem'),
+          cert: fs.readFileSync('certs/fullchain_api.pem')
         },
         app)
     .listen(port, () => {

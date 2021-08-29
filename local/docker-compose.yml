@@ -75,6 +75,12 @@ services:
     entrypoint: openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=${DOMAIN_NAME}" -keyout privkey.pem -out fullchain.pem
     volumes:
       - certs:/home
+  selfsign-api:
+    image: frapsoft/openssl #literally just a container with openssl installed, should define locally to be safe
+    working_dir: /home
+    entrypoint: openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=${DOMAIN_NAME}:${API_PORT}" -keyout privkey_api.pem -out fullchain_api.pem
+    volumes:
+      - certs:/home
   postgres:
     image: postgres:12
     container_name: ${PGHOST}

@@ -75,7 +75,9 @@ async function getGPUList() {
   // get all gpulist
   try {
     // Accessing database
-    var gpulist = await (pool.query('SELECT * FROM gpulist'));
+    const client = await pool.connect();
+    var gpulist = await (client.query('SELECT * FROM gpulist'));
+    client.release();
     // Got data
     if (gpulist.rows.length === 0) {
       throw (new Error('Failed to get any GPUs'));

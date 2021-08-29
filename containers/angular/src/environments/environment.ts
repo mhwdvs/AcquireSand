@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  get_gpus_endpoint: 'https://localho.st:60777/get_gpus',
-  get_listings_endpoint: 'https://localho.st:60777/get_listings'
+  get_gpus_endpoint: 'https://localhost:60777/get_gpus',
+  get_listings_endpoint: 'https://localhost:60777/get_listings'
 };
 
 /*
