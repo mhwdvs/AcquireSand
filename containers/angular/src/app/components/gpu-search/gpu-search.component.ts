@@ -3,6 +3,13 @@ import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/c
 
 import {environment} from '../../../environments/environment';
 
+enum ResultsStatus {
+  Loading = 1,
+  Normal = 2,
+  NoMore = 3,
+  None = 4
+}
+
 @Component({
   selector: 'app-gpu-search',
   templateUrl: './gpu-search.component.html',
@@ -10,18 +17,19 @@ import {environment} from '../../../environments/environment';
 })
 export class GpuSearchComponent implements OnInit {
   @ViewChild('anchor') anchor: ElementRef;
-  gpus = [];
-  gpu_list = [];
-  next_listing_index = 0;
-  listing_batch_size = 10;
-  listing_number = 0;
-  spinner = true;
-  adding_listings = false;
-  currentfilters = {specific: '', minperf: '', brand: '', min: '', max: ''};
-  last_update;
-  no_more_results = false;
-  no_results = false;
-  end_of_results = false;
+  listings = [];            // gpu listings to be displayed
+  listing_batch_size = 10;  // number of listings to be obtained by each POST rq
+  currentfilters = {
+    specific: '',
+    minperf: '',
+    brand: '',
+    min: '',
+    max: ''
+  };  // current search filters
+
+  // User-facing vars:
+  last_update;                 // time of last database update
+  rs = ResultsStatus.Loading;  // Status of results
   // temp
   original_data = [];
 
@@ -48,62 +56,50 @@ export class GpuSearchComponent implements OnInit {
   // called whenever a change is made to any filters
   change(value: any, field: string) {
     // clear currently displayed gpus
-    this.gpus = [];
+    this.listings = [];
     // update filters
     this.currentfilters[field] = value;
     // add new listings
-    this.next_listing_index = 0;
-    this.add_listings(this.next_listing_index, this.listing_batch_size);
-    this.next_listing_index += this.listing_batch_size - 1;
+    this.add_listings(this.listings.length + 1, this.listing_batch_size);
   }
 
-  // filters and pushes
-  add_listings(first: number, required: number) {
-    // get next batch of gpus
-    // get listings from API
+  // get next batch of gpus
+  // get listings from API
+  add_listings(offset: number, limit: number) {
+    this.rs = ResultsStatus.Loading;
     this.http
         .post(environment.get_listings_endpoint, {
           // request body
           'filters': this.currentfilters,
-          'count': this.listing_batch_size,
-          'first': first
+          'count': limit,
+          'first': offset
         })
         .subscribe(
-            (val) => {
+            (val: any) => {
               console.log('Post call successful value returned in body', val);
-              // this.next_listing_index += val.match_count;
+
+              let prev_len = this.listings.length;
+
               for (let i of val.matches.rows) {
-                this.gpus.push(i);
-              }
-              if (first == 0) {
-                // update last_updated, Unix epoch in seconds to milliseconds
-                // (*1000)
-                this.last_update = new Date(val.outtime * 1000);
+                this.listings.push(i);  // update listings
               }
 
-              /*
-              if(val.end_of_listings){
-                this.end_of_results = true;
-                this.no_more_results = true;
-                this.no_results = false;
+              if (this.listings.length == 0 && offset == 0) {
+                this.rs = ResultsStatus.None;
+                console.log('none listings ig')
+              } else if (this.listings.length < prev_len + limit) {
+                this.rs = ResultsStatus.NoMore;
               }
-              else if(val.no_matches){
-                this.end_of_results = true;
-                this.no_more_results = false;
-                this.no_results = true;
-              }
-              else {
-                this.end_of_results = false;
-                this.no_more_results = false;
-                this.no_results = false;
-              }*/
             },
             response => {
               console.log('POST call in error', response);
             },
             () => {
               console.log('The POST observable is now completed.');
-              this.adding_listings = false;
+              // don't overwrite non-loading status
+              if (this.rs == ResultsStatus.Loading) {
+                this.rs = ResultsStatus.Normal;
+              }
             });
   }
 
@@ -120,10 +116,7 @@ export class GpuSearchComponent implements OnInit {
     // check if anchor is in view
     if (anchorpos.top < window.innerHeight) {
       // anchor is in view, add gpus to dom object
-      if (this.adding_listings == false) {
-        this.adding_listings = true;
-        this.add_listings(this.next_listing_index, this.listing_batch_size);
-      }
+      this.add_listings(this.listings.length + 1, this.listing_batch_size);
     }
     // Check if top is out of view
     if (document.body.scrollTop > 20 ||

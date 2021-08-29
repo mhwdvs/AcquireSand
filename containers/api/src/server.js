@@ -183,6 +183,7 @@ while (match_count < count && current < listing_number) {
     to_be_sent.matches = await pool.query(
         'SELECT * FROM gpudb ORDER BY (price / (SELECT relative FROM gpulist WHERE name = gpu)) LIMIT ' +
         count + ' OFFSET ' + first);
+    to_be_sent.match_count = await pool.query('SELECT COUNT(*) FROM gpudb');
     res.send(to_be_sent);
   } else {
     res.send(

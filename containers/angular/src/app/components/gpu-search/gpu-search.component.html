@@ -15,22 +15,22 @@
 <input #min (input)="change(min.value, 'min')" type="number" min="0" placeholder="Min price">
 <input #max (input)="change(max.value, 'max')" type="number" min="0" placeholder="Max price">
 <br />
-<h4>Total listings: {{listing_number}}</h4>
+<h4>Total listings: {{listings.length}}</h4>
 <h4>Last updated: {{last_update}}</h4>
 
 <app-search-results id="parent"
-    [gpus]="gpus">
+    [gpus]="listings">
 </app-search-results>
 
 <button #topBtn (click)="scroll_top()" id="topBtn" title="Scroll to Top">^</button>
 
 <!-- loading anchor -->
-<div #anchor id="anchor" [hidden]="end_of_results">
+<div [style.visibility]="rs == 1? 'visible': 'hidden'" #anchor id="anchor">
     <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
-<div [hidden]="no_more_results">
+<div [style.visibility]="rs == 3? 'visible': 'hidden'">
     <p>No more results ;(</p>
 </div>
-<div [hidden]="no_results">
+<div [style.visibility]="rs == 4? 'visible': 'hidden'">
     <p>No results found ;(</p>
 </div>
