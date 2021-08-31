@@ -18,15 +18,15 @@ function sleep(ms) {
 
 // database update loop
 async function loop() {
-  while (true) {
-    try {
-      // await main();
-    } catch (e) {
-      console.error(e);
-    }
-    console.log('Sleeping for 60 minutes!');
-    await sleep(60 * 1000);
+  // while (true) {
+  try {
+    // await main();
+  } catch (e) {
+    console.error(e);
   }
+  console.log('Sleeping for 60 minutes!');
+  await sleep(60 * 1000);
+  //}
 }
 
 async function main() {
@@ -41,16 +41,6 @@ async function main() {
     return;
   }
 
-  // Setting existing listings as "Unavailable"
-  try {
-    await setExistingUnavailable();
-  } catch (e) {
-    console.log(
-        'Error in setting existing listings as "Unavailable"' + e.name +
-        e.message);
-    return;
-  }
-
   // Getting new ebay listings and updating database
   try {
     await getListings(gpuList);
@@ -58,15 +48,6 @@ async function main() {
     console.log(
         'Error in getting new ebay listings and updating database' + e.name +
         e.message);
-    return;
-  }
-
-  // Removing "Unavailable" listings
-  try {
-    await purgeUnavailable();
-  } catch (e) {
-    console.log(
-        'Error in removing "Unavailable" listings' + e.name + e.message);
     return;
   }
 }
@@ -93,23 +74,6 @@ async function getGPUList() {
     console.error('Error getting GPU List: ' + err.name + err.message);
     throw err;
   }
-}
-
-async function setExistingUnavailable() {
-  // mark all existing listings as "unavailable"
-  // clients will also use environment variables
-  // for connection information
-  pool.connect((err, client, release) => {
-    if (err) {
-      throw (new Error('Error acquiring client: ' + err.stack));
-    }
-    client.query('UPDATE gpudb SET available = FALSE', (err, res) => {
-      release();
-      if (err) {
-        throw (new Error('Error executing query: ' + err.stack));
-      }
-    });  // has result if neccessary
-  });
 }
 
 async function getListings(gpuList) {
@@ -177,28 +141,25 @@ async function getGPU(gpu) {
   await (async () => {
     try {
       // returns response
-      await got(url);
-      if (gpu.data.findItemsAdvancedResponse[0].searchResult[0]['@count'] > 0) {
-        for (const i of gpu.data.findItemsAdvancedResponse[0]
+      const response = await got(url);
+      const body = JSON.parse(response.body);
+      if (body.findItemsAdvancedResponse[0].searchResult[0]['@count'] > 0) {
+        for (const i of body.findItemsAdvancedResponse[0]
                  .searchResult[0]
                  .item) {
           // price = price + shipping cost
           // shipping price cannot be determined if calculated method is used
           if (i.shippingInfo[0].shippingServiceCost) {
-            price = i.sellingStatus[0].currentPrice[0].__value__ +
-                i.shippingInfo[0].shippingServiceCost[0].__value__;
+            price = parseFloat(i.sellingStatus[0].currentPrice[0].__value__) +
+                parseFloat(i.shippingInfo[0].shippingServiceCost[0].__value__);
           } else {
-            price = i.sellingStatus[0].currentPrice[0].__value__;
+            price = parseFloat(sellingStatus[0].currentPrice[0].__value__);
           }
-          // push data to postgres db
-          // clients will also use environment variables
-          // for connection information
-          addToDB(gpu, i, price);
+          addToDB(gpu.replace(/\+/g, ' '), i, price);
         }
       }
     } catch (error) {
       console.log(error);
-      //=> 'Internal server error ...'
     }
   })();
 }
@@ -210,48 +171,14 @@ async function addToDB(gpu, i, price) {
       return console.error('Error acquiring client', err.stack);
     }
     client.query(
-        'IF \
-      (EXISTS\
-      (SELECT * FROM gpudb WHERE gpu = ' +
-            gpu + ' AND title = ' + i.title +
-            ' AND itemurl = ' + i.viewItemURL +
-            ' AND imageurl = ' + i.galleryURL + ' AND price = ' + price + '))\
-      BEGIN \
-      UPDATE gpudb SET available TRUE WHERE WHERE gpu = ' +
-            gpu + ' AND title = ' + i.title +
-            ' AND itemurl = ' + i.viewItemURL +
-            ' AND imageurl = ' + i.galleryURL + ' AND price = ' + price + '\
-      END \
-      ELSE \
-      BEGIN \
-      INSERT INTO gpudb (gpu, title, itemurl, imageurl, price, currency, available) VALUES (' +
-            gpu + ', ' + i.title + ', ' + i.viewItemURL + ', ' + i.galleryURL +
-            ', ' + price + ', ' + CURRENCY + ', TRUE)\
-      END',
+        'INSERT INTO gpudb (gpu, title, itemurl, imageurl, price, currency) VALUES (' +
+            '(SELECT name FROM gpulist WHERE name=\'' + gpu + '\')' +
+            ', \'' + i.title + '\', \'' + i.viewItemURL + '\', \'' +
+            i.galleryURL + '\', ' + price +
+            ', \'AUD\')',  // TODO CURRENCY is hardcoded
         (err, res) => {
           release();
           if (err) return console.error('Error executing query', err.stack);
         });
   });
-}
-
-async function purgeUnavailable() {
-  // remove all listings found to now be "unavailable"
-  // clients will also use environment variables
-  // for connection information
-  // has result if needed
-  pool.connect((err, client, release) => {
-    if (err) {
-      return console.error('Error acquiring client', err.stack);
-    }
-    client.query(
-        'DELETE FROM gpudb \
-      WHERE (available, FALSE) IN \
-      ( SELECT available, FALSE FROM gpudb )',
-        (err, res) => {
-          release();
-          if (err) return console.error('Error executing query', err.stack);
-        });
-  });
-  return;
 }
