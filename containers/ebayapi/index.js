@@ -130,7 +130,7 @@ async function getGPU(gpu) {
     'itemFilter(4).name=LocatedIn&' +
     'itemFilter(4).value=' + COUNTRY + '&' +  // LOCALISATION TARGET
     'keywords=' + gpu +                       // The gpu  being searched for
-    '+-cooler+-performance+-like+-backplate+-waterblock+-buying+-bracket+-fan+-fans+-replacement+-mosfet+-powerlink+-bios+-nvlink+-kit+-suits+-faulty+-1080p+-description&' +  // Blacklisted terms
+    '+-cooler+-performance+-like+-backplate+-waterblock+-block+-bykski+-buying+-bracket+-fan+-fans+-replacement+-mosfet+-powerlink+-bios+-nvlink+-kit+-suits+-faulty+-1080p+-description&' +  // Blacklisted terms
     'LH_PrefLoc=1&' +  // Only show items within region selected
     'categoryId=27386&' +
     'paginationInput.entriesPerPage=100&' +  // redundent?
