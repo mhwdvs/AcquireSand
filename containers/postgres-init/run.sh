@@ -19,7 +19,7 @@ sleep 5
 psql -U ${PGUSER} -h ${PGHOST} -c "insert into gpudb (title, gpu, itemurl, imageurl, price, currency) values ('Test GPU!', (select name from gpulist where name='NVIDIA GeForce RTX 3080'), 'https://www.youtube.com/watch?v=8ZtW1ziF9u0', 'https://cdn.frankerfacez.com/emoticon/130077/4', 7777.77, 'AUD');"
 
 # display tables in database
-while true 
+while false 
 do
     psql -U ${PGUSER} -h ${PGHOST} -c "\dt;"
     psql -U ${PGUSER} -h ${PGHOST} -c "select * from gpudb"
