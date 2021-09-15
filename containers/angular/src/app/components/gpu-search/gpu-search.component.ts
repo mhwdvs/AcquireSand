@@ -17,7 +17,8 @@ enum ResultsStatus {
 })
 export class GpuSearchComponent implements OnInit {
   @ViewChild('anchor') anchor: ElementRef;
-  listings = [];            // gpu listings to be displayed
+  listings = [];  // gpu listings to be displayed
+  total_matching_listings = '???';
   listing_batch_size = 10;  // number of listings to be obtained by each POST rq
   currentfilters = {
     specific: '',
@@ -31,17 +32,16 @@ export class GpuSearchComponent implements OnInit {
   last_update;                 // time of last database update
   rs = ResultsStatus.Loading;  // Status of results
   // temp
-  original_data = [];
+  gpulist = [];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    // get gpu list
     this.http.get(environment.get_gpus_endpoint, {})
         .subscribe(
             (val: any) => {
               console.log('Post call successful value returned in body', val);
-              this.original_data = val;
+              this.gpulist = val;
             },
             response => {
               console.log('POST call in error', response);

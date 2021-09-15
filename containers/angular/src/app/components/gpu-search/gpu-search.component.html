@@ -1,12 +1,11 @@
-<!--
 <h2>Filters:</h2>
 <select #specific (change)="change(specific.value, 'specific')" name="specific">
     <option value="" selected>Specific GPU</option>
-    <option *ngFor="let gpu of original_data" value="{{gpu.name}}">{{gpu.name}}</option>
+    <option *ngFor="let gpu of gpulist" value="{{gpu.name}}">{{gpu.name}}</option>
 </select>
 <select #minperf (change)="change(minperf.value, 'minperf')" name="minperf">
     <option value="" selected>Minimum performance</option>
-    <option *ngFor="let gpu of original_data" value="{{gpu.relative}}">{{gpu.name}}</option>
+    <option *ngFor="let gpu of gpulist" value="{{gpu.relative}}">{{gpu.name}}</option>
 </select>
 <select #brand (change)="change(brand.value, 'brand')" name="brand">
     <option value="" selected>Brand</option>
@@ -15,7 +14,7 @@
 </select>
 <input #min (input)="change(min.value, 'min')" type="number" min="0" placeholder="Min price">
 <input #max (input)="change(max.value, 'max')" type="number" min="0" placeholder="Max price"> 
-<br /> -->
+<br />
 <p>Total listings: {{listings.length}}</p>
 <p>Last updated: {{last_update}}</p>
 
