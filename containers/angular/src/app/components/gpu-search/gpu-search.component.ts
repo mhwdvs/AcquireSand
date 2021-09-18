@@ -1,6 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+
+import {environment} from '../../../environments/environment';
+
+enum ResultsStatus {
+  Loading = 1,
+  Normal = 2,
+  NoMore = 3,
+  None = 4
+}
 
 @Component({
   selector: 'app-gpu-search',
@@ -9,40 +17,38 @@ import { environment } from '../../../environments/environment';
 })
 export class GpuSearchComponent implements OnInit {
   @ViewChild('anchor') anchor: ElementRef;
-  gpus = [];
-  gpu_list = [];
-  next_listing_index = 0;
-  listing_batch_size = 10;
-  listing_number = 0;
-  spinner = true;
-  adding_listings = false;
-  currentfilters = {specific: '', minperf: '', brand: '', min: '', max: ''};
-  last_update;
-  no_more_results = false;
-  no_results = false;
-  end_of_results = false;
+  listings = [];            // gpu listings to be displayed
+  listing_batch_size = 10;  // number of listings to be obtained by each POST rq
+  currentfilters = {
+    specific: '',
+    minperf: '',
+    brand: '',
+    min: '',
+    max: ''
+  };  // current search filters
+
+  // User-facing vars:
+  last_update;                 // time of last database update
+  rs = ResultsStatus.Loading;  // Status of results
   // temp
   original_data = [];
 
-  constructor(private http:HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     // get gpu list
-    this.http.get(environment.get_gpus_endpoint,{
-    })
-      .subscribe(
-        (val: any) => {
-          console.log("Post call successful value returned in body", val);
-          this.original_data = val;
-        },
-        response => {
-          console.log("POST call in error", response);
-        },
-        () => {
-          console.log("The POST observable is now completed.");
-        }
-      );
+    this.http.get(environment.get_gpus_endpoint, {})
+        .subscribe(
+            (val: any) => {
+              console.log('Post call successful value returned in body', val);
+              this.original_data = val;
+            },
+            response => {
+              console.log('POST call in error', response);
+            },
+            () => {
+              console.log('The POST observable is now completed.');
+            });
     // get initial listings
     this.add_listings(0, this.listing_batch_size);
   }
@@ -50,87 +56,74 @@ export class GpuSearchComponent implements OnInit {
   // called whenever a change is made to any filters
   change(value: any, field: string) {
     // clear currently displayed gpus
-    this.gpus = [];
+    this.listings = [];
     // update filters
     this.currentfilters[field] = value;
     // add new listings
-    this.next_listing_index = 0;
-    this.add_listings(this.next_listing_index, this.listing_batch_size);
-    this.next_listing_index += this.listing_batch_size - 1;
+    this.add_listings(this.listings.length + 1, this.listing_batch_size);
   }
 
-  // filters and pushes 
-  add_listings(first: number, required: number){
-    // get next batch of gpus
-    let data;
-    // get listings from API
-    this.http.post(environment.get_listings_endpoint,{
-      // request body
-      "filters": this.currentfilters,
-      "count": this.listing_batch_size,
-      "first": first
-    })
-      .subscribe(
-        (val) => {
-          console.log("Post call successful value returned in body", val);
-          data = val;
-          this.next_listing_index += data.match_count;
-          for(let i of data.matches){
-            this.gpus.push(i);
-          }
-          if(first == 0){
-            // update last_updated, Unix epoch in seconds to milliseconds (*1000)
-            this.last_update = new Date(data.outtime  * 1000);
-          }
+  // get next batch of gpus
+  // get listings from API
+  add_listings(offset: number, limit: number) {
+    this.rs = ResultsStatus.Loading;
+    this.http
+        .post(environment.get_listings_endpoint, {
+          // request body
+          'filters': this.currentfilters,
+          'count': limit,
+          'first': offset
+        })
+        .subscribe(
+            (val: any) => {
+              console.log('Post call successful value returned in body', val);
 
-          if(data.end_of_listings){
-            this.end_of_results = true;
-            this.no_more_results = true;
-            this.no_results = false;
-          }
-          else if(data.no_matches){
-            this.end_of_results = true;
-            this.no_more_results = false;
-            this.no_results = true;
-          }
-          else {
-            this.end_of_results = false;
-            this.no_more_results = false;
-            this.no_results = false;
-          }
-        },
-        response => {
-          console.log("POST call in error", response);
-        },
-        () => {
-          console.log("The POST observable is now completed.");
-          this.adding_listings = false;
-        }
-      );
+              let prev_len = this.listings.length;
+
+              for (let i of val.matches.rows) {
+                this.listings.push(i);  // update listings
+              }
+
+              if (this.listings.length == 0 && offset == 0) {
+                this.rs = ResultsStatus.None;
+                console.log('none listings ig')
+              } else if (this.listings.length < prev_len + limit) {
+                this.rs = ResultsStatus.NoMore;
+              }
+            },
+            response => {
+              console.log('POST call in error', response);
+            },
+            () => {
+              console.log('The POST observable is now completed.');
+              // don't overwrite non-loading status
+              if (this.rs == ResultsStatus.Loading) {
+                this.rs = ResultsStatus.Normal;
+              }
+            });
   }
 
-  scroll_top(){
-    document.body.scrollTop = 0; // For Safari
-    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+  scroll_top() {
+    document.body.scrollTop = 0;  // For Safari
+    document.documentElement.scrollTop =
+        0;  // For Chrome, Firefox, IE and Opera
   }
 
-  @HostListener('window:scroll', ['$event']) scroll_event(){
+  @HostListener('window:scroll', ['$event'])
+  scroll_event() {
     let anchorpos = this.anchor.nativeElement.getBoundingClientRect()
-    let topBtn = document.getElementById("topBtn");
+    let topBtn = document.getElementById('topBtn');
     // check if anchor is in view
-    if(anchorpos.top < window.innerHeight){
+    if (anchorpos.top < window.innerHeight) {
       // anchor is in view, add gpus to dom object
-      if(this.adding_listings == false){
-        this.adding_listings = true;
-        this.add_listings(this.next_listing_index, this.listing_batch_size);
-      }      
+      this.add_listings(this.listings.length + 1, this.listing_batch_size);
     }
     // Check if top is out of view
-    if(document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
-      topBtn.style.display = "block";
-    }
-    else{
-      topBtn.style.display = "none";
+    if (document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20) {
+      topBtn.style.display = 'block';
+    } else {
+      topBtn.style.display = 'none';
     }
   }
 }

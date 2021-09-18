@@ -7,24 +7,56 @@ services:
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
       - nginx
-  rust:
-    build: ../containers/rust
-    volumes:
-      - ../containers/commonfiles:/var/local/commonfiles
-      - ./.env:/var/local/rust/.env
+  python:
+    container_name: python
+    build: ../containers/python
+    environment: 
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
+      - chromedriver
+    depends_on: 
+      - chromedriver
+  chromedriver:
+    container_name: chromedriver
+    build: ../containers/chromedriver
+    networks:
+      - chromedriver
+    environment: 
+      CHROMEDRIVER_WHITELISTED_IPS: ''
+  ebayapi:
+    build: ../containers/ebayapi
+    environment: 
+      EBAY_API_KEY: ${EBAY_API_KEY}
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   api:
     build: ../containers/api
     volumes:
-      - ../containers/commonfiles/gpudb.json:/var/local/api/gpudb.json
-      - ../containers/commonfiles/outtime.json:/var/local/api/outtime.json
       - certs:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:
-      - rust
       - selfsign
     ports:
       - "${API_PORT}:60777"
     entrypoint: npm run dev ${DOMAIN_NAME}
+    environment: 
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   nginx:
     image: nginx:1.19.3-alpine
     volumes:
@@ -43,7 +75,40 @@ services:
     entrypoint: openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=${DOMAIN_NAME}" -keyout privkey.pem -out fullchain.pem
     volumes:
       - certs:/home
-      
+  selfsign-api:
+    image: frapsoft/openssl #literally just a container with openssl installed, should define locally to be safe
+    working_dir: /home
+    entrypoint: openssl req -x509 -nodes -days 73000 -newkey rsa:2048 -subj "/CN=${DOMAIN_NAME}:${API_PORT}" -keyout privkey_api.pem -out fullchain_api.pem
+    volumes:
+      - certs:/home
+  postgres:
+    image: postgres:12
+    container_name: ${PGHOST}
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+    networks: 
+      - postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  postgres-init:
+    build: ../containers/postgres-init
+    depends_on: 
+      - postgres
+    networks: 
+      - postgres
+    environment: 
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGHOST: ${PGHOST}
+      PGPORT: ${PGPORT}
+
 volumes:
   sitedata:
   certs:
+  postgres:
+
+networks: 
+  postgres:
+  chromedriver:
