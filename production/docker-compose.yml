@@ -7,24 +7,56 @@ services:
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
       - nginx
-  rust:
-    build: ../containers/rust
-    volumes:
-      - ../containers/commonfiles:/var/local/commonfiles
-      - ./.env:/var/local/rust/.env
+  python:
+    container_name: python
+    build: ../containers/python
+    environment: 
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
+      - chromedriver
+    depends_on: 
+      - chromedriver
+  chromedriver:
+    container_name: chromedriver
+    build: ../containers/chromedriver
+    networks:
+      - chromedriver
+    environment: 
+      CHROMEDRIVER_WHITELISTED_IPS: ''
+  ebayapi:
+    build: ../containers/ebayapi
+    environment: 
+      EBAY_API_KEY: ${EBAY_API_KEY}
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   api:
     build: ../containers/api
     volumes:
-      - ../containers/commonfiles/gpudb.json:/var/local/api/gpudb.json
-      - ../containers/commonfiles/outtime.json:/var/local/api/outtime.json
       - certs:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:
-      - rust
       - certbot
     ports:
       - "${API_PORT}:60777"
     entrypoint: npm run dev ${DOMAIN_NAME}
+    environment: 
+      PGUSER: ${PGUSER}
+      PGHOST: ${PGHOST}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+    networks: 
+      - postgres
   nginx:
     image: nginx:1.19.3-alpine
     volumes:
@@ -45,7 +77,31 @@ services:
         EMAIL_ADDRESS: ${EMAIL_ADDRESS}
     volumes:
       - certs:/etc/letsencrypt/live/${DOMAIN_NAME}
-
+      - postgres:/var/lib/postgresql/data
+  postgres-init:
+    build: ../containers/postgres-init
+    depends_on: 
+      - postgres
+    networks: 
+      - postgres
+    environment: 
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+      PGDATABASE: ${PGDATABASE}
+      PGHOST: ${PGHOST}
+      PGPORT: ${PGPORT}
+  apachesuperset:
+    image: apache/superset
+    ports: 
+      - 60001:8088
+    entrypoint: ["/bin/sh", "-c", "superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin && superset db upgrade && superset load_examples && superset init && /usr/bin/docker-entrypoint.sh"]
+    networks:
+      - postgres
 volumes:
   sitedata:
   certs:
+  postgres:
+
+networks: 
+  postgres:
+  chromedriver:
