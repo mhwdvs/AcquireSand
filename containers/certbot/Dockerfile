@@ -2,7 +2,7 @@ FROM certbot/certbot
 ARG DOMAIN_NAME
 ARG EMAIL_ADDRESS
 
-RUN certbot -n -d ${DOMAIN_NAME} -m ${EMAIL_ADDRESS}
+RUN certbot certonly -n -d ${DOMAIN_NAME} -m ${EMAIL_ADDRESS}
 RUN certbot renew --dry-run
 
 ENTRYPOINT ["/bin/sh", "-c"]
