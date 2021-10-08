@@ -75,6 +75,9 @@ services:
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
         EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+    ports:
+      - "443:443"
+      - "80:80"
     volumes:
       - certs:/etc/letsencrypt/live/${DOMAIN_NAME}
       - postgres:/var/lib/postgresql/data
