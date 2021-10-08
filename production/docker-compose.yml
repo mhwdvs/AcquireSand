@@ -78,6 +78,16 @@ services:
     volumes:
       - certs:/etc/letsencrypt/live/${DOMAIN_NAME}
       - postgres:/var/lib/postgresql/data
+  postgres:
+    image: postgres:12
+    container_name: ${PGHOST}
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+    networks: 
+      - postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
   postgres-init:
     build: ../containers/postgres-init
     depends_on: 
