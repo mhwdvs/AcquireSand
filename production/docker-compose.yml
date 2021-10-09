@@ -6,7 +6,7 @@ services:
       - ../containers/angular/src:/var/local/angular/src
       - sitedata:/var/local/angular/dist/gpucomp-ang
     depends_on:
-      - nginx
+      - swag
   python:
     container_name: python
     build: ../containers/python
