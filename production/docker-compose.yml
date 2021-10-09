@@ -45,7 +45,7 @@ services:
       - certs/:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:
-      - certbot
+      - swag
     ports:
       - "${API_PORT}:60777"
     entrypoint: npm run dev ${DOMAIN_NAME}
