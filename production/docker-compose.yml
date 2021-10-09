@@ -42,7 +42,7 @@ services:
   api:
     build: ../containers/api
     volumes:
-      - certs/:/var/local/api/certs
+      - certs:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:
       - swag
@@ -95,7 +95,7 @@ services:
       - 443:443
       - 80:80 #optional
     volumes:
-      - certs/:/config/
+      - certs:/config
       - ./nginx.conf:/config/nginx/site-confs/default
       - sitedata:/config/www
     restart: unless-stopped
@@ -109,6 +109,7 @@ services:
 volumes:
   sitedata:
   postgres:
+  certs:
 
 networks: 
   postgres:
