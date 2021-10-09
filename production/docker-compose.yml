@@ -88,7 +88,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Australia/Perth
-      - URL=${URL}
+      - URL=${DOMAIN_NAME}
       - SUBDOMAINS=,
       - VALIDATION=http
     ports:
