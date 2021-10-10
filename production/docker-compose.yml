@@ -43,7 +43,8 @@ services:
   api:
     build: ../containers/api
     volumes:
-      - /etc/letsencrypt/live/acquiresand.com:/var/local/api/certs
+      - /etc/letsencrypt/live/acquiresand.com/fullchain.pem:/var/local/api/certs/fullchain.pem
+      - /etc/letsencrypt/live/acquiresand.com/privkey.pem:/var/local/api/certs/privkey.pem
       - ./.env:/var/local/api/.env
     depends_on:
       - postgres
