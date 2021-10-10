@@ -2,9 +2,6 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-// import .env environment variables
-require('dotenv').config();
-
 export const environment = {
   production: false,
   get_gpus_endpoint: 'https://' + process.env.DOMAIN_NAME + ':' + process.env.API_PORT + '/get_gpus',
