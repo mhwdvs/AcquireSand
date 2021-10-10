@@ -5,6 +5,9 @@ services:
     volumes:
       - ../containers/angular/src:/var/local/angular/src
       - /var/www/canary.acquiresand.com:/var/local/angular/dist/gpucomp-ang
+    environment:
+      API_PORT: ${API_PORT}
+      DOMAIN_NAME: ${DOMAIN_NAME}
   python:
     container_name: python
     build: ../containers/python
