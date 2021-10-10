@@ -80,15 +80,15 @@ services:
       PGDATABASE: ${PGDATABASE}
       PGHOST: ${PGHOST}
       PGPORT: ${PGPORT}
-  apachesuperset:
-    image: apache/superset
-    depends_on:
-      - postgres
-    ports: 
-      - 8088:8088
-    entrypoint: ["/bin/sh", "-c", "superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin && superset db upgrade && superset load_examples && superset init && /usr/bin/docker-entrypoint.sh"]
-    networks:
-      - postgres
+  #apachesuperset:
+  #  image: apache/superset
+  #  depends_on:
+  #    - postgres
+  #  ports: 
+  #    - 8088:8088
+  #  entrypoint: ["/bin/sh", "-c", "superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin && superset db upgrade && superset load_examples && superset init && /usr/bin/docker-entrypoint.sh"]
+  #  networks:
+  #    - postgres
 volumes:
   postgres:
   certs:
