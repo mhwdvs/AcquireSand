@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  get_gpus_endpoint: 'https://' + process.env.DOMAIN_NAME + ':' + process.env.API_PORT + '/get_gpus',
-  get_listings_endpoint: 'https://' + process.env.DOMAIN_NAME + ':' + process.env.API_PORT + '/get_listings'
+  get_gpus_endpoint: 'https://canary.acquiresand.com:60777/get_gpus',
+  get_listings_endpoint: 'https://canary.acquiresand.com:60777/get_listings'
 };
 
 /*
