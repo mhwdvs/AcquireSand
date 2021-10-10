@@ -206,8 +206,8 @@ app.options('/get_gpus', cors())      // include before other routes
 https
     .createServer(
         {
-          key: fs.readFileSync('certs/privkey_api.pem'),
-          cert: fs.readFileSync('certs/fullchain_api.pem')
+          key: fs.readFileSync('certs/privkey.pem'),
+          cert: fs.readFileSync('certs/fullchain.pem')
         },
         app)
     .listen(port, () => {

@@ -43,7 +43,7 @@ services:
   api:
     build: ../containers/api
     volumes:
-      - certs:/var/local/api/certs
+      - /etc/letsencrypt/live/acquiresand.com:/var/local/api/certs
       - ./.env:/var/local/api/.env
     depends_on:
       - postgres
@@ -91,7 +91,6 @@ services:
   #    - postgres
 volumes:
   postgres:
-  certs:
 
 networks: 
   postgres:
