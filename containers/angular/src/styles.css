@@ -1,10 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
 @font-face {
-    font-family: "Nanum Gothic";
-    src: url("NanumGothic-Regular.ttf");
-}
-
-@font-face {
     font-family: "Roboto";
     src: url("Roboto-Regular.ttf");
 }
@@ -28,9 +23,9 @@ a{
 }
 
 h1 {
-    font-family: "Nanum Gothic";
+    font-family: "OpenSans";
 }
 
 button {
-    font-family: "Nanum Gothic";
+    font-family: "OpenSans";
 }
