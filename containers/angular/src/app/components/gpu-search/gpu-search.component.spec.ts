@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { GpuSearchComponent } from './gpu-search.component';
 
@@ -6,7 +6,7 @@ describe('SearchFiltersComponent', () => {
   let component: GpuSearchComponent;
   let fixture: ComponentFixture<GpuSearchComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ GpuSearchComponent ]
     })
