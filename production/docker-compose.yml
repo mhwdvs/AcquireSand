@@ -4,7 +4,7 @@ services:
     build: ../containers/angular
     volumes:
       - ../containers/angular/src:/var/local/angular/src
-      - sitedata:/var/local/angular/dist/gpucomp-ang
+      - /var/www/canary.acquiresand.com:/var/local/angular/dist/gpucomp-ang
   python:
     container_name: python
     build: ../containers/python
@@ -87,7 +87,6 @@ services:
     networks:
       - postgres
 volumes:
-  sitedata:
   postgres:
   certs:
 
