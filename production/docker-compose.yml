@@ -42,7 +42,7 @@ services:
     volumes:
       - certs:/var/local/api/certs
       - ./.env:/var/local/api/.env
-    depends-on:
+    depends_on:
       - postgres
     ports:
       - "${API_PORT}:60777"
@@ -79,7 +79,7 @@ services:
       PGPORT: ${PGPORT}
   apachesuperset:
     image: apache/superset
-    depends-on:
+    depends_on:
       - postgres
     ports: 
       - 8088:8088
