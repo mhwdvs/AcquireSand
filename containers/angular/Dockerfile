@@ -11,6 +11,6 @@ COPY *.json ./
 COPY browserslist .
 COPY README.md .
 
-CMD ["npm", "run-script", "buildwatch"]
+CMD ["npm", "run-script", "buildwatch", "--prod"]
 
 EXPOSE 4200

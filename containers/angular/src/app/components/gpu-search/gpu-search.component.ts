@@ -20,6 +20,7 @@ export class GpuSearchComponent implements OnInit {
   listings = [];  // gpu listings to be displayed
   total_matching_listings = '???';
   listing_batch_size = 10;  // number of listings to be obtained by each POST rq
+  is_scrolling = false;
   currentfilters = {
     specific: '',
     minperf: '',
@@ -31,8 +32,6 @@ export class GpuSearchComponent implements OnInit {
   // User-facing vars:
   last_update;                 // time of last database update
   rs = ResultsStatus.Loading;  // Status of results
-  // temp
-  gpulist = [];
 
   constructor(private http: HttpClient) {}
 
@@ -41,7 +40,6 @@ export class GpuSearchComponent implements OnInit {
         .subscribe(
             (val: any) => {
               console.log('Post call successful value returned in body', val);
-              this.gpulist = val;
             },
             response => {
               console.log('POST call in error', response);
@@ -50,7 +48,7 @@ export class GpuSearchComponent implements OnInit {
               console.log('The POST observable is now completed.');
             });
     // get initial listings
-    this.add_listings(0, this.listing_batch_size);
+    this.add_listings(this.listings.length + 1, this.listing_batch_size);
   }
 
   // called whenever a change is made to any filters
@@ -90,6 +88,7 @@ export class GpuSearchComponent implements OnInit {
               } else if (this.listings.length < prev_len + limit) {
                 this.rs = ResultsStatus.NoMore;
               }
+              this.is_scrolling = false;
             },
             response => {
               console.log('POST call in error', response);
@@ -111,10 +110,11 @@ export class GpuSearchComponent implements OnInit {
 
   @HostListener('window:scroll', ['$event'])
   scroll_event() {
-    let anchorpos = this.anchor.nativeElement.getBoundingClientRect()
+    let anchorpos = this.anchor.nativeElement.getBoundingClientRect().top
     let topBtn = document.getElementById('topBtn');
     // check if anchor is in view
-    if (anchorpos.top < window.innerHeight) {
+    if (!this.is_scrolling && anchorpos < window.innerHeight) {
+      this.is_scrolling = true;
       // anchor is in view, add gpus to dom object
       this.add_listings(this.listings.length + 1, this.listing_batch_size);
     }
