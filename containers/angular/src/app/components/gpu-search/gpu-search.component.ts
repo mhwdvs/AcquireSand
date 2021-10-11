@@ -31,8 +31,6 @@ export class GpuSearchComponent implements OnInit {
   // User-facing vars:
   last_update;                 // time of last database update
   rs = ResultsStatus.Loading;  // Status of results
-  // temp
-  gpulist = [];
 
   constructor(private http: HttpClient) {}
 
@@ -41,7 +39,6 @@ export class GpuSearchComponent implements OnInit {
         .subscribe(
             (val: any) => {
               console.log('Post call successful value returned in body', val);
-              this.gpulist = val;
             },
             response => {
               console.log('POST call in error', response);
