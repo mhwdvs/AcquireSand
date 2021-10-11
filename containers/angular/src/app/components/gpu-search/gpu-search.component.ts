@@ -20,7 +20,7 @@ export class GpuSearchComponent implements OnInit {
   listings = [];  // gpu listings to be displayed
   total_matching_listings = '???';
   listing_batch_size = 10;  // number of listings to be obtained by each POST rq
-  current_offset = 0;
+  is_scrolling = false;
   currentfilters = {
     specific: '',
     minperf: '',
@@ -48,7 +48,7 @@ export class GpuSearchComponent implements OnInit {
               console.log('The POST observable is now completed.');
             });
     // get initial listings
-    this.add_listings(this.current_offset, this.listing_batch_size);
+    this.add_listings(this.listings.length + 1, this.listing_batch_size);
   }
 
   // called whenever a change is made to any filters
@@ -89,6 +89,7 @@ export class GpuSearchComponent implements OnInit {
               } else if (this.listings.length < prev_len + limit) {
                 this.rs = ResultsStatus.NoMore;
               }
+              this.is_scrolling = false;
             },
             response => {
               console.log('POST call in error', response);
@@ -113,10 +114,10 @@ export class GpuSearchComponent implements OnInit {
     let anchorpos = this.anchor.nativeElement.getBoundingClientRect().top
     let topBtn = document.getElementById('topBtn');
     // check if anchor is in view
-    if (anchorpos < window.innerHeight) {
+    if (!this.is_scrolling && anchorpos < window.innerHeight) {
+      this.is_scrolling = true;
       // anchor is in view, add gpus to dom object
-      this.current_offset += this.listings.length + 1;
-      this.add_listings(this.current_offset, this.listing_batch_size);
+      this.add_listings(this.listings.length + 1, this.listing_batch_size);
     }
     // Check if top is out of view
     if (document.body.scrollTop > 20 ||
