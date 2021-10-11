@@ -58,8 +58,7 @@ export class GpuSearchComponent implements OnInit {
     // update filters
     this.currentfilters[field] = value;
     // add new listings
-    this.current_offset += this.listings.length + 1;
-    this.add_listings(this.current_offset, this.listing_batch_size);
+    this.add_listings(this.listings.length + 1, this.listing_batch_size);
   }
 
   // get next batch of gpus
