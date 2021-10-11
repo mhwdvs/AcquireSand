@@ -26,7 +26,6 @@
               "src/apple-touch-icon.png",
               "src/android-chrome-192x192.png",
               "src/android-chrome-512x512.png",
-              "src/site.webmanifest",
               "src/assets",
               "src/manifest.webmanifest"
             ],
