@@ -18,15 +18,16 @@ function sleep(ms) {
 
 // database update loop
 async function loop() {
-  // while (true) {
-  try {
-    // await main();
-  } catch (e) {
-    console.error(e);
+  while (true) {
+    try {
+      await main();
+    } catch (e) {
+      console.error(e);
+    }
+
+    console.log('Sleeping for 60 minutes!');
+    await sleep(2 * 60 * 60 * 1000); // sleep for 2 hoours
   }
-  console.log('Sleeping for 60 minutes!');
-  await sleep(60 * 1000);
-  //}
 }
 
 async function main() {
