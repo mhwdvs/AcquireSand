@@ -1,0 +1,24 @@
+@startuml
+
+skinparam componentStyle rectangle
+
+cloud "Docker"{
+    database "Database" {
+        [Postgres]
+    }
+    [Angular]
+    [eBay API]
+    [ExpressJS (frontend API)]
+    [Certbot (Let's Encrypt)]
+    [Python Scraper]
+}
+
+[Postgres] <--> [eBay API]
+[Postgres] --> [ExpressJS (frontend API)]
+[Postgres] <-- [Python Scraper]
+
+[ExpressJS (frontend API)] --> [Angular]
+[Certbot (Let's Encrypt)] --> [Angular]
+
+
+@enduml

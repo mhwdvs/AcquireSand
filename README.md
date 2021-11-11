@@ -1,5 +1,14 @@
 # GPUCompare-Dockerized
 
+## Design
+
+![](design.png)
+
+- Python to scrape GPU performance scores from 3DMark
+- Rust to call eBay API for listings of each GPU, and sort all of the listings by *price/performance ratio*
+- Express JS API to provide Angular with data from 
+- Angular to run web server
+
 ## To be done
 
 - Switch from json files to SQL/mongodb server queries
@@ -91,13 +100,6 @@ server {
 
 ### Production Environment
 - `cd production && docker-compose up -d`
-
-## Design
-
-- Python to scrape GPU performance scores from 3DMark
-- Rust to call eBay API for listings of each GPU, and sort all of the listings by *price/performance ratio*
-- Express JS API to provide Angular with data from 
-- Angular to run web server
 
 ### Postgres DB info
 
